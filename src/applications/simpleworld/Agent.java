@@ -22,15 +22,16 @@ public class Agent extends UniqueDynamicObject{
 		if ( world.getIteration() % 20 == 0 )
 		{
 			double dice = Math.random();
-			if ( dice < 0.25 )
+			if ( (dice < 0.25)&&(this.world.getCellHeight( ( this.x + 1 ) % this.world.getWidth(),this.y)>=0) )
 				this.x = ( this.x + 1 ) % this.world.getWidth() ;
 			else
-				if ( dice < 0.5 )
+				if ( (dice < 0.5 )&&(this.world.getCellHeight( ( this.x - 1 ) % this.world.getWidth(),this.y)>=0) )
 					this.x = ( this.x - 1 +  this.world.getWidth() ) % this.world.getWidth() ;
 				else
-					if ( dice < 0.75 )
+					if ( (dice < 0.75 )&&(this.world.getCellHeight(this.x,( this.y + 1 ) % this.world.getHeight() )>=0 ) )
 						this.y = ( this.y + 1 ) % this.world.getHeight() ;
-					else
+			
+					else if((this.world.getCellHeight(this.x,( this.y - 1 ) % this.world.getHeight() )>=0 )  )
 						this.y = ( this.y - 1 +  this.world.getHeight() ) % this.world.getHeight() ;
 		}
 	}

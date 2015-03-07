@@ -61,8 +61,10 @@ public class WorldOfTrees extends World {
     			uniqueObjects.add(new BridgeBlock(110,110+i,this));
     	}
     	
-    	uniqueDynamicObjects.add(new Agent(64,64,this));
     	
+    	for(int i=0;i<15;i++){
+    	uniqueDynamicObjects.add(new Agent(64,64,this));
+    	}
     }
     
     protected void initCellularAutomata(int __dxCA, int __dyCA, double[][] landscape)
