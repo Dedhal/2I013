@@ -11,13 +11,14 @@ import worlds.World;
 public class ForestCA extends CellularAutomataInteger {
 
 	CellularAutomataDouble _cellsHeightValuesCA;
-	
+	CellularAutomataDouble _cellsHeightWithWater;
+	double Neautmp[][];
+
 	World world;
-	
 	public ForestCA ( World __world, int __dx , int __dy, CellularAutomataDouble cellsHeightValuesCA )
 	{
 		super(__dx,__dy,true ); // buffering must be true.
-		
+		Neautmp=new double[__dx][__dy];
 		_cellsHeightValuesCA = cellsHeightValuesCA;
 		
 		this.world = __world;
@@ -33,7 +34,7 @@ public class ForestCA extends CellularAutomataInteger {
     				if ( Math.random() < 0.001 ) // was: 0.71
     					this.setCellState(x, y, 1); // tree
     				
-    				else if( Math.random() < 0.001)
+    				else if( Math.random() < 0.003)
     					this.setCellState(x, y, 4);
     				
     				else
@@ -44,17 +45,166 @@ public class ForestCA extends CellularAutomataInteger {
     				this.setCellState(x, y, -1); // water (ignore)
     			}
     		}
+		
+		this.SetEau(154, 164, true);
+		this.SetNeau(154, 164, 10);
+		
     	this.swapBuffer();
 
 	}
 
+	
 	public void step()
 	{
+		this.SetEau(154, 164, true);
+		this.SetNeau(154, 164, 30);
+    	for ( int i = 0 ; i != _dx ; i++ )
+    		for ( int j = 0 ; j != _dy ; j++ ){
+    			if(this.Eau(i,j)){
+    				
+    				double h1,h2,h3,h4;
+    				h1= _cellsHeightValuesCA.getCellState((i+_dx-1)%(_dx) , j )+ this.GetNeau((i+_dx-1)%(_dx) , j );
+    				h2= _cellsHeightValuesCA.getCellState((i+_dx+1)%(_dx) , j )+ this.GetNeau( (i+_dx+1)%(_dx) , j );
+    				h3= _cellsHeightValuesCA.getCellState(i , (j+_dy+1)%(_dy) ) + this.GetNeau(i , (j+_dy+1)%(_dy) );
+    				h4= _cellsHeightValuesCA.getCellState( i , (j+_dy-1)%(_dy) ) + this.GetNeau( i , (j+_dy-1)%(_dy) );
+    				
+    				double htmp=Math.min(Math.min(h1,h2), Math.min(h3, h4));
+    				
+    				if(htmp==h1)
+    				{
+    					if(this.GetNeau(i, j)+_cellsHeightValuesCA.getCellState(i, j)<h1){
+    						System.out.println("Bassin\n");
+    					}
+    					else{
+    						if (!this.Eau((i+_dx-1)%(_dx) , j)){
+    							this.SetEau((i+_dx-1)%(_dx) , j, true);
+    						}
+    						
+    						if(h1+this.GetNeau(i, j)<_cellsHeightValuesCA.getCellState(i, j)) {    							
+    							Neautmp[(i+_dx-1)%_dx][j]=this.GetNeau(i,j);
+    							Neautmp[i][j]=0;
+    							 							
+    						}
+    						
+    						else{
+    							double d=(h1+this.GetNeau(i, j)-(_cellsHeightValuesCA.getCellState(i, j)))/2;
+    							Neautmp[(i+_dx-1)%_dx][j]=this.GetNeau(i, j)-d;
+    							Neautmp[i][j]=d;
+    							
+    						}
+    												
+    						
+    					}
+    				}
+    				else if(htmp==h2)
+    				{
+    					
+    					if(this.GetNeau(i, j)+_cellsHeightValuesCA.getCellState(i, j)<=h2){
+    						System.out.println("Bassin\n");
+    					}
+    					else {
+    						if (!this.Eau((i+_dx+1)%(_dx) , j)){
+    							this.SetEau((i+_dx+1)%(_dx) , j, true);
+    						}
+    						
+    						if(h2+this.GetNeau(i, j)<_cellsHeightValuesCA.getCellState(i, j)) {    							
+    							Neautmp[(i+_dx+1)%_dx][j]=this.GetNeau(i,j);
+    							Neautmp[i][j]=0;
+    							 							
+    						}
+    						
+    						else{
+    							double d=(h2+this.GetNeau(i, j)-(_cellsHeightValuesCA.getCellState(i, j)))/2;
+    							Neautmp[(i+_dx+1)%_dx][j]=this.GetNeau(i, j)-d;
+    							Neautmp[i][j]=d;
+    							
+    						}
+    												
+    						
+    					}
+    					
+    				}
+    				else if(htmp==h3) 
+    				{
+    					if(this.GetNeau(i, j)+_cellsHeightValuesCA.getCellState(i, j)<=h3){
+    						System.out.println("Bassin\n");
+    					}
+    					else{
+    						if (!this.Eau(i , (j+_dy+1)%(_dy))){
+    							this.SetEau(i , (j+_dy+1)%_dy, true);
+    						}
+    						
+    						if(h3+this.GetNeau(i, j)<_cellsHeightValuesCA.getCellState(i, j)) {    							
+    							Neautmp[i][(j+_dy+1)%_dy]=this.GetNeau(i,j);
+    							Neautmp[i][j]=0;
+    							 							
+    						}
+    						
+    						else{
+    							double d=(h3+this.GetNeau(i, j)-(_cellsHeightValuesCA.getCellState(i, j)))/2;
+    							Neautmp[i][(j+_dy+1)%_dy]=this.GetNeau(i, j)-d;
+    							Neautmp[i][j]=d;
+    							
+    						}
+    												
+    						
+    					}
+    				
+    				}
+    				else if(htmp==h4)
+    				{
+    					if(this.GetNeau(i, j)+_cellsHeightValuesCA.getCellState(i, j)<=h4){
+    						System.out.println("Bassin\n");
+    					}
+    					else{
+    						if (!this.Eau(i , (j+_dy-1)%(_dy))){
+    							this.SetEau(i , (j+_dy-1)%(_dy), true);
+    						}
+    						
+    						if(h4+this.GetNeau(i, j)<_cellsHeightValuesCA.getCellState(i, j)) {    							
+    							Neautmp[i][(j+_dy-1)%_dy]=this.GetNeau(i,j);
+    							Neautmp[i][j]=0;
+    							System.out.println("Total\n");		
+    						}
+    						
+    						else{
+    							double d=(h4+this.GetNeau(i, j)-(_cellsHeightValuesCA.getCellState(i, j)))/2;
+    							Neautmp[i][(j+_dy-1)%_dy]=this.GetNeau(i, j)-d;
+    							Neautmp[i][j]=d;
+    							System.out.println("partiel\n");
+    						}
+    												
+    						
+    					}
+    				
+    					
+    				}
+    				else{
+    					
+    					System.out.printf("error water height not found \n");
+    					
+    				}
+    			
+    			}
+    		}
+		
     	for ( int i = 0 ; i != _dx ; i++ )
     		for ( int j = 0 ; j != _dy ; j++ )
     		{
     			
-	    			if ( this.getCellState(i,j) == 1 ) // tree?
+    				if(this.Eau(i,j)) {
+    					this.SetNeau(i, j, Neautmp[i][j]);
+    					if(Neautmp[i][j]==0){
+    						this.setCellState(i, j, 0);
+    						this.SetEau(i, j, false);
+    						System.out.println("test\n");
+    					}
+    					else{
+    					this.setCellState(i,j,-1);
+    					}
+    				}
+    			
+    				else if ( this.getCellState(i,j) == 1 ) // tree?
 	    			{
 	    				// check if neighbors are burning
 	    				if ( 
@@ -81,7 +231,7 @@ public class ForestCA extends CellularAutomataInteger {
 	    						
 	    				
 	    				
-	    				else if ( Math.random() < 0.000001 ) // spontaneously take fire ?
+	    				else if ( Math.random() < 0.00001 ) // spontaneously take fire ?
 	    				{
 	    					this.setCellState(i,j,2);
 	    				}
