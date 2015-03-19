@@ -73,7 +73,7 @@ public class ForestCA extends CellularAutomataInteger {
     				if(htmp==h1)
     				{
     					if(this.GetNeau(i, j)+_cellsHeightValuesCA.getCellState(i, j)<h1){
-    						System.out.println("Bassin\n");
+    			
     					}
     					else{
     						if (!this.Eau((i+_dx-1)%(_dx) , j)){
@@ -81,14 +81,15 @@ public class ForestCA extends CellularAutomataInteger {
     						}
     						
     						if(h1+this.GetNeau(i, j)<_cellsHeightValuesCA.getCellState(i, j)) {    							
-    							Neautmp[(i+_dx-1)%_dx][j]=this.GetNeau(i,j);
+    							Neautmp[(i+_dx-1)%_dx][j]=Neautmp[(i+_dx-1)%_dx][j]+this.GetNeau(i,j);
     							Neautmp[i][j]=0;
     							 							
     						}
     						
     						else{
+    							
     							double d=(h1+this.GetNeau(i, j)-(_cellsHeightValuesCA.getCellState(i, j)))/2;
-    							Neautmp[(i+_dx-1)%_dx][j]=this.GetNeau(i, j)-d;
+    							Neautmp[(i+_dx-1)%_dx][j]=Neautmp[(i+_dx-1)%_dx][j]+this.GetNeau(i, j)-d;
     							Neautmp[i][j]=d;
     							
     						}
@@ -100,7 +101,7 @@ public class ForestCA extends CellularAutomataInteger {
     				{
     					
     					if(this.GetNeau(i, j)+_cellsHeightValuesCA.getCellState(i, j)<=h2){
-    						System.out.println("Bassin\n");
+
     					}
     					else {
     						if (!this.Eau((i+_dx+1)%(_dx) , j)){
@@ -108,14 +109,14 @@ public class ForestCA extends CellularAutomataInteger {
     						}
     						
     						if(h2+this.GetNeau(i, j)<_cellsHeightValuesCA.getCellState(i, j)) {    							
-    							Neautmp[(i+_dx+1)%_dx][j]=this.GetNeau(i,j);
+    							Neautmp[(i+_dx+1)%_dx][j]=Neautmp[(i+_dx+1)%_dx][j]+this.GetNeau(i,j);
     							Neautmp[i][j]=0;
     							 							
     						}
     						
     						else{
     							double d=(h2+this.GetNeau(i, j)-(_cellsHeightValuesCA.getCellState(i, j)))/2;
-    							Neautmp[(i+_dx+1)%_dx][j]=this.GetNeau(i, j)-d;
+    							Neautmp[(i+_dx+1)%_dx][j]=Neautmp[(i+_dx+1)%_dx][j]+this.GetNeau(i, j)-d;
     							Neautmp[i][j]=d;
     							
     						}
@@ -127,7 +128,7 @@ public class ForestCA extends CellularAutomataInteger {
     				else if(htmp==h3) 
     				{
     					if(this.GetNeau(i, j)+_cellsHeightValuesCA.getCellState(i, j)<=h3){
-    						System.out.println("Bassin\n");
+    					
     					}
     					else{
     						if (!this.Eau(i , (j+_dy+1)%(_dy))){
@@ -135,14 +136,14 @@ public class ForestCA extends CellularAutomataInteger {
     						}
     						
     						if(h3+this.GetNeau(i, j)<_cellsHeightValuesCA.getCellState(i, j)) {    							
-    							Neautmp[i][(j+_dy+1)%_dy]=this.GetNeau(i,j);
+    							Neautmp[i][(j+_dy+1)%_dy]=Neautmp[i][(j+_dy+1)%_dy]+this.GetNeau(i,j);
     							Neautmp[i][j]=0;
     							 							
     						}
     						
     						else{
     							double d=(h3+this.GetNeau(i, j)-(_cellsHeightValuesCA.getCellState(i, j)))/2;
-    							Neautmp[i][(j+_dy+1)%_dy]=this.GetNeau(i, j)-d;
+    							Neautmp[i][(j+_dy+1)%_dy]=Neautmp[i][(j+_dy+1)%_dy]+this.GetNeau(i, j)-d;
     							Neautmp[i][j]=d;
     							
     						}
@@ -154,7 +155,7 @@ public class ForestCA extends CellularAutomataInteger {
     				else if(htmp==h4)
     				{
     					if(this.GetNeau(i, j)+_cellsHeightValuesCA.getCellState(i, j)<=h4){
-    						System.out.println("Bassin\n");
+    			
     					}
     					else{
     						if (!this.Eau(i , (j+_dy-1)%(_dy))){
@@ -162,16 +163,16 @@ public class ForestCA extends CellularAutomataInteger {
     						}
     						
     						if(h4+this.GetNeau(i, j)<_cellsHeightValuesCA.getCellState(i, j)) {    							
-    							Neautmp[i][(j+_dy-1)%_dy]=this.GetNeau(i,j);
+    							Neautmp[i][(j+_dy-1)%_dy]=Neautmp[i][(j+_dy-1)%_dy]+this.GetNeau(i,j);
     							Neautmp[i][j]=0;
-    							System.out.println("Total\n");		
+    			
     						}
     						
     						else{
     							double d=(h4+this.GetNeau(i, j)-(_cellsHeightValuesCA.getCellState(i, j)))/2;
-    							Neautmp[i][(j+_dy-1)%_dy]=this.GetNeau(i, j)-d;
+    							Neautmp[i][(j+_dy-1)%_dy]=Neautmp[i][(j+_dy-1)%_dy]+this.GetNeau(i, j)-d;
     							Neautmp[i][j]=d;
-    							System.out.println("partiel\n");
+    		
     						}
     												
     						
@@ -197,7 +198,9 @@ public class ForestCA extends CellularAutomataInteger {
     					if(Neautmp[i][j]==0){
     						this.setCellState(i, j, 0);
     						this.SetEau(i, j, false);
-    						System.out.println("test\n");
+    						if(this.GetNeau(i, j) > 100){
+    
+    						}
     					}
     					else{
     					this.setCellState(i,j,-1);
