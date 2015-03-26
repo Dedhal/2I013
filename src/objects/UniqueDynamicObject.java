@@ -5,10 +5,11 @@
 package objects;
 
 import javax.media.opengl.GL2;
+import java.util.*;
 
 import worlds.World;
 
-abstract public class UniqueDynamicObject // UniqueObject are object defined with particular, unique, properties (ex.: particular location)
+abstract public class UniqueDynamicObject extends Observable // UniqueObject are object defined with particular, unique, properties (ex.: particular location)
 {
 	protected int x,y;
 	protected World world;
@@ -21,6 +22,7 @@ abstract public class UniqueDynamicObject // UniqueObject are object defined wit
 	}
 	
 	abstract public void step();
+	abstract public int getVie();
 	
 	public int[] getCoordinate()
 	{

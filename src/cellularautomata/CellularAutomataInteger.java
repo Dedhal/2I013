@@ -112,6 +112,58 @@ public class CellularAutomataInteger extends CellularAutomata {
 		niveau_lave[__x][__y]=d;
 	}
 	
+	public boolean Eau(int __x, int __y){
+		checkBounds(__x,__y);
+		
+		return eau[__x][__y];
+		
+	}
+	
+	public double GetNeau(int __x, int __y){
+		checkBounds(__x,__y);
+		
+		return niveau_eau[__x][__y];
+				
+	}
+	
+	public boolean Lave(int __x, int __y){
+		checkBounds(__x,__y);
+		return lave[__x][__y];
+	
+	}
+
+	public double GetNlave(int __x, int __y){
+		checkBounds(__x,__y);
+		return niveau_lave[__x][__y];
+	
+	}
+	
+	public void SetEau(int __x, int __y, boolean b){
+		checkBounds(__x,__y);
+		
+		eau[__x][__y]=b;
+				
+	}
+	
+	public void SetNeau(int __x, int __y, double d){
+		checkBounds(__x,__y);
+		if (eau_max<d) eau_max=d;
+		niveau_eau[__x][__y]=d;
+	}
+	
+	public void SetLave(int __x, int __y, boolean b){
+		checkBounds(__x,__y);
+		
+		lave[__x][__y]=b;
+				
+	}
+	
+	public void SetNlave(int __x, int __y, double d){
+		checkBounds(__x,__y);
+		
+		niveau_lave[__x][__y]=d;
+	}
+	
 	public void setCellState ( int __x, int __y, int __value )
 	{
 		checkBounds (__x,__y);
