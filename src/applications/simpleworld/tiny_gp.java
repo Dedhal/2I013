@@ -5,6 +5,8 @@
  *
  */
 
+package applications.simpleworld;
+
 import java.util.*;
 import java.io.*; 
 import java.text.DecimalFormat; 

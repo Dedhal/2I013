@@ -10,12 +10,16 @@ import objects.UniqueDynamicObject;
 
 import worlds.World;
 
-public class Agent extends UniqueDynamicObject{
+abstract public class Agent extends UniqueDynamicObject{
+	
+	int vie;
 	
 	public Agent ( int __x , int __y, World __world )
 	{
 		super(__x,__y,__world);
 	}
+	
+	abstract public int getVie();
 	
 	public void step() 
 	{
@@ -25,13 +29,13 @@ public class Agent extends UniqueDynamicObject{
 			if ( (dice < 0.25)&&(this.world.getCellHeight( ( this.x + 1 ) % this.world.getWidth(),this.y)>=0) )
 				this.x = ( this.x + 1 ) % this.world.getWidth() ;
 			else
-				if ( (dice < 0.5 )&&(this.world.getCellHeight( ( this.x - 1 ) % this.world.getWidth(),this.y)>=0) )
-					this.x = ( this.x - 1 +  this.world.getWidth() ) % this.world.getWidth() ;
+				if ( (dice < 0.5 )&&(this.world.getCellHeight( ( this.x - 1 + this.world.getWidth()) % this.world.getWidth(),this.y)>=0) )
+					this.x = ( this.x - 1 + this.world.getWidth() ) % this.world.getWidth() ;
 				else
 					if ( (dice < 0.75 )&&(this.world.getCellHeight(this.x,( this.y + 1 ) % this.world.getHeight() )>=0 ) )
 						this.y = ( this.y + 1 ) % this.world.getHeight() ;
 			
-					else if((this.world.getCellHeight(this.x,( this.y - 1 ) % this.world.getHeight() )>=0 )  )
+					else if((this.world.getCellHeight(this.x,( this.y - 1 + this.world.getWidth() ) % this.world.getHeight() )>=0 )  )
 						this.y = ( this.y - 1 +  this.world.getHeight() ) % this.world.getHeight() ;
 		}
 	}

@@ -3,11 +3,15 @@
 // date of creation: 2013-1-12
 
 package cellularautomata;
+import java.util.*;
 
-public abstract class CellularAutomata {
+public abstract class CellularAutomata extends Observable {
 
 	protected int _dx;
 	protected int _dy;
+	
+	static int dx;
+	static int dy;
 
 	boolean buffering;
 	
@@ -17,6 +21,10 @@ public abstract class CellularAutomata {
 	{
 		_dx = __dx;
 		_dy = __dy;
+		
+		
+		dx = __dx;
+		dy = __dy;
 
 		buffering = __buffering;
 		

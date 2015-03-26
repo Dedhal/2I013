@@ -110,7 +110,6 @@ public abstract class World {
     // ---
     
     abstract public int getCellValue(int x, int y); // used by the visualization code to call specific object display.
-
     abstract public void setCellValue(int x, int y, int state);
     
     // ---- 
@@ -146,7 +145,7 @@ public abstract class World {
 	}
     
 	public int getWidth() { return dxCA; }
-	public int getHeight() { return dxCA; }
+	public int getHeight() { return dyCA; }
 
 	public double getMaxEverHeight() { return this.maxEverHeightValue; }
 	public double getMinEverHeight() { return this.minEverHeightValue; }

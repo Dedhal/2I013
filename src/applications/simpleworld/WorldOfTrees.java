@@ -63,14 +63,38 @@ public class WorldOfTrees extends World {
     	
     	
     	for(int i=0;i<15;i++){
-    	uniqueDynamicObjects.add(new Agent(64,64,this));
+    		int x = (int)(Math.random()*getWidth());
+    		int y = (int)(Math.random()*getHeight());
+    		
+    		if(cellularAutomata.getCellState(x, y) == -2 || cellularAutomata.getCellState(x, y) == -1)
+    			i--;
+    		
+    		else
+    		{
+    			uniqueDynamicObjects.add(new Proie(x,y ,this));
+    			uniqueDynamicObjects.get(uniqueDynamicObjects.size()-1).addObserver(cellularAutomata);
+    		}
     	}
+    	
+    	for(int i=0;i<15;i++){
+    		int x = (int)(Math.random()*getWidth());
+    		int y = (int)(Math.random()*getHeight());
+    		
+    		if(cellularAutomata.getCellState(x, y) == -1 || cellularAutomata.getCellState(x, y) == -2)
+    			i--;
+    		else
+    			uniqueDynamicObjects.add(new Predateur(x,y,this));
+        }
     }
     
     protected void initCellularAutomata(int __dxCA, int __dyCA, double[][] landscape)
     {
     	cellularAutomata = new ForestCA(this,__dxCA,__dyCA,cellsHeightValuesCA);
     	cellularAutomata.init();
+    	for(int i = 0; i < 700; i ++)
+    	{
+    		cellularAutomata.step();
+    	}
     }
     
     protected void stepCellularAutomata()
@@ -84,7 +108,10 @@ public class WorldOfTrees extends World {
     	// nothing to do.
     	for ( int i = 0 ; i < this.uniqueDynamicObjects.size() ; i++ )
     	{
-    		this.uniqueDynamicObjects.get(i).step();
+    		if(this.uniqueDynamicObjects.get(i).getVie() <= 0)
+    			uniqueDynamicObjects.remove(i);
+    		else
+    			this.uniqueDynamicObjects.get(i).step();
     		
     	}
     }

@@ -7,9 +7,9 @@ package landscapegenerator;
 public class PerlinNoiseLandscapeGenerator {
 	
 	static final float
-	PERSISTANCE = 1/2;
+	PERSISTANCE = 0f;
 	static final int
-	NUMBER_OCTAVES = 4;
+	NUMBER_OCTAVES = 7;
     public static double[][] generatePerlinNoiseLandscape ( int dxView, int dyView, double scaling, double landscapeAltitudeRatio, int perlinLayerCount )
     {
     	double landscape[][] = new double[dxView][dyView];
@@ -42,7 +42,7 @@ public class PerlinNoiseLandscapeGenerator {
     	//y = ( 1.0 - ( (x * (x * x * 15731 + 789221) + 1376312589) & 7fffffff) / 1073741824.0);
     	n = n * ( n * n * 20143 + 102181) + 1303235369;
     	n = n & 0x7fffffff;
-    	res = 1.0 - ( n / 1096174777.0);
+    	res = (double)1.0 - ( n / 1096174777.0);
     	return res;
     }
     
@@ -54,7 +54,7 @@ public class PerlinNoiseLandscapeGenerator {
     	//y = ( 1.0 - ( (x * (x * x * 15731 + 789221) + 1376312589) & 7fffffff) / 1073741824.0);
     	n = n * ( n * n * 15731 + 789221) + 1376312589;
     	n = n & 0x7fffffff;
-    	res = 1.0 - ( n / 1073741824.0);
+    	res = (double)1.0 - ( n / 1073741824.0);
     	return res;
     }
     
@@ -66,7 +66,7 @@ public class PerlinNoiseLandscapeGenerator {
     	//y = ( 1.0 - ( (x * (x * x * 15731 + 789221) + 1376312589) & 7fffffff) / 1073741824.0);
     	n = n * ( n * n * 35803 + 600631) + 1303236413;
     	n = n & 0x7fffffff;
-    	res = 1.0 - ( n / 1061741833.0);
+    	res = (double)1.0 - ( n / 1061741833.0);
     	return res;
     }
     
@@ -78,7 +78,7 @@ public class PerlinNoiseLandscapeGenerator {
     	//y = ( 1.0 - ( (x * (x * x * 15731 + 789221) + 1376312589) & 7fffffff) / 1073741824.0);
     	n = n * ( n * n * 18637 + 971851) + 1320267899;
     	n = n & 0x7fffffff;
-    	res = 1.0 - ( n / 1058906617.0);
+    	res = (double)1.0 - ( n / 1058906617.0);
     	return res;
     }
     
@@ -120,7 +120,10 @@ public class PerlinNoiseLandscapeGenerator {
     
     public static double LinearInterpolate(double a, double b, double x)
     {
-    	return a * (1-x) + b*x;
+    	
+    	double ft = x * Math.PI;
+    	double f = (1 - Math.cos(ft)) * 0.5;
+    	return a * (1 - f) + b * f;
     }
     
     public static double Interpolate(double x, double y)
@@ -217,14 +220,26 @@ public class PerlinNoiseLandscapeGenerator {
     				total = total + Interpolate(x * frequency, y * frequency) * amplitude;
     				break;
     			case 1:
-    				total = total + Interpolate(x * frequency, y * frequency) * amplitude;
+    				total = total + Interpolate2(x * frequency, y * frequency) * amplitude;
     				break;
     			case 2:
-    				total = total + Interpolate(x * frequency, y * frequency) * amplitude;
+    				total = total + Interpolate1(x * frequency, y * frequency) * amplitude;
     				break;
     			case 3:
+    				total = total + Interpolate3(x * frequency, y * frequency) * amplitude;
+    				break;
+    			case 4:
     				total = total + Interpolate(x * frequency, y * frequency) * amplitude;
     				break;
+    			case 5:
+    				total = total + Interpolate2(x * frequency, y * frequency) * amplitude;
+    				break;
+    			case 6:
+    				total = total + Interpolate1(x * frequency, y * frequency) * amplitude;
+    				break;
+    			case 7:
+    				total = total + Interpolate3(x * frequency, y * frequency) * amplitude;
+    				break; 
     		}
     	}
     	
