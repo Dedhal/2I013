@@ -14,7 +14,7 @@ import javax.media.opengl.awt.GLCanvas;
 import javax.media.opengl.fixedfunc.*;
 import com.jogamp.opengl.util.Animator;
 import com.jogamp.opengl.util.gl2.GLUT;
-
+import cellularobject.Cell;
 import javax.media.opengl.GL;
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLCapabilities;
@@ -386,7 +386,7 @@ public class Landscape implements GLEventListener, KeyListener, MouseListener{
                 	{
            			 	
 		                double height = _myWorld.getCellHeight(x+movingX,y+movingY);
-           			 	int cellState = _myWorld.getCellValue(x+movingX,y+movingY);	
+           			 	Cell cellState = _myWorld.getCellValue(x+movingX,y+movingY);	
            			 	float[] color = _myWorld.getCellColorValue(x+movingX,y+movingY);
 
 	                	// compute CA-based coloring

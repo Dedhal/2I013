@@ -6,12 +6,14 @@ package applications.simpleworld;
 
 import javax.media.opengl.GL2;
 
+import cellularobject.Cell;
+import cellularobject.EauProfonde;
 import objects.*;
 import worlds.World;
 
 public class WorldOfTrees extends World {
 
-    protected ForestCA cellularAutomata;
+    protected Automata cellularAutomata;
 
     public void init ( int __dxCA, int __dyCA, double[][] landscape )
     {
@@ -66,7 +68,7 @@ public class WorldOfTrees extends World {
     		int x = (int)(Math.random()*getWidth());
     		int y = (int)(Math.random()*getHeight());
     		
-    		if(cellularAutomata.getCellState(x, y) == -2 || cellularAutomata.getCellState(x, y) == -1)
+    		if(cellularAutomata.getCellState(x, y) instanceof EauProfonde)
     			i--;
     		
     		else
@@ -80,7 +82,7 @@ public class WorldOfTrees extends World {
     		int x = (int)(Math.random()*getWidth());
     		int y = (int)(Math.random()*getHeight());
     		
-    		if(cellularAutomata.getCellState(x, y) == -1 || cellularAutomata.getCellState(x, y) == -2)
+    		if(cellularAutomata.getCellState(x, y) instanceof EauProfonde)
     			i--;
     		else
     			uniqueDynamicObjects.add(new Predateur(x,y,this));
@@ -89,9 +91,9 @@ public class WorldOfTrees extends World {
     
     protected void initCellularAutomata(int __dxCA, int __dyCA, double[][] landscape)
     {
-    	cellularAutomata = new ForestCA(this,__dxCA,__dyCA,cellsHeightValuesCA);
+    	cellularAutomata = new Automata(this,__dxCA,__dyCA,cellsHeightValuesCA);
     	cellularAutomata.init();
-    	for(int i = 0; i < 700; i ++)
+    	for(int i = 0; i < 1; i ++)
     	{
     		cellularAutomata.step();
     	}
@@ -99,8 +101,9 @@ public class WorldOfTrees extends World {
     
     protected void stepCellularAutomata()
     {
-    	if ( iteration%10 == 0 )
+    	if ( iteration%10 == 0 ){
     		cellularAutomata.step();
+    	}
     }
     
     protected void stepAgents()
@@ -116,27 +119,27 @@ public class WorldOfTrees extends World {
     	}
     }
 
-    public int getCellValue(int x, int y) // used by the visualization code to call specific object display.
+    public Cell getCellValue(int x, int y) // used by the visualization code to call specific object display.
     {
     	return cellularAutomata.getCellState(x%dxCA,y%dyCA);
     }
 
-    public void setCellValue(int x, int y, int state)
+    public void setCellValue(int x, int y, Cell state)
     {
     	cellularAutomata.setCellState( x%dxCA, y%dyCA, state);
     }
     
-	public void displayObjectAt(World _myWorld, GL2 gl, int cellState, int x,
+	public void displayObjectAt(World _myWorld, GL2 gl, Cell cellState, int x,
 			int y, double height, float offset,
 			float stepX, float stepY, float lenX, float lenY,
 			float normalizeHeight) 
 	{
-		switch ( cellState )
+		switch ( 0 )
 		{
 		case 1: // trees: green, fire, burnt
 		case 2:
 		case 3:
-			Tree.displayObjectAt(_myWorld,gl,cellState, x, y, height, offset, stepX, stepY, lenX, lenY, normalizeHeight);
+			//Tree.displayObjectAt(_myWorld,gl,cellState, x, y, height, offset, stepX, stepY, lenX, lenY, normalizeHeight);
 		default:
 			// nothing to display at this location.
 		}

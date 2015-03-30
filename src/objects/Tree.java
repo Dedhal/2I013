@@ -6,11 +6,12 @@ package objects;
 
 import javax.media.opengl.GL2;
 
+import cellularobject.Cell;
 import worlds.World;
 
 public class Tree extends CommonObject {
 
-    public static void displayObjectAt(World myWorld, GL2 gl, int cellState, float x, float y, double height, float offset, float stepX, float stepY, float lenX, float lenY, float normalizeHeight )
+    public static void displayObjectAt(World myWorld, GL2 gl, Cell cellState, float x, float y, double height, float offset, float stepX, float stepY, float lenX, float lenY, float normalizeHeight )
     {
         //float smoothFactorAvg = ( smoothFactor[0] + smoothFactor[1] + smoothFactor[2] + smoothFactor[3] ) / 4.f;
         
