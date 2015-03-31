@@ -6,7 +6,7 @@ import java.util.*;
 
 import worlds.World;
 
-public class Proie extends Agent implements Observer{
+public class Proie extends Agent {
 	
 	int vie = 100;
 	int faim;
@@ -20,6 +20,8 @@ public class Proie extends Agent implements Observer{
 	boolean Famine;
 	int brule = 0;
 	
+	ProieListener listener;
+	
 	public Proie(int x, int y, World __world)
 	{
 		super(x, y, __world);
@@ -27,37 +29,29 @@ public class Proie extends Agent implements Observer{
 		this.faim = this.faimMax;
 	}
 	
-	public void SeNourrir()
+	public int[] SeNourrir(Proie p)
 	{
-		this.faim += 10;
-		this.setChanged();
-		this.notifyObservers();
+		p.setFaim(10);
 		
-		if(this.faim > this.faimMax)
-			this.faim = this.faimMax;
+		if(p.getFaim() > p.getFaimMax())
+			p.setFaim(p.getFaimMax());
+		
+		return p.getCoordinate();
 	}
 	
-	public void update(Observable obs, Object obj)
+	public int getFaim()
 	{
-		if(obs instanceof ForestCA)
-		{
-			int State = ((ForestCA) obs).getCellState(this.x, this.y);
-			if(State == 4)
-			{
-				if(faim < faimMax)
-				{
-					this.SeNourrir();
-				}
-			}
-			else if(State%10 == 2)
-			{
-				this.brule += 5;
-			}
-			else
-			{
-				
-			}
-		}
+		return this.faim;
+	}
+	
+	public int getFaimMax()
+	{
+		return this.faimMax;
+	}
+	
+	public void setFaim(int a)
+	{
+		this.faim += a;
 	}
 	
 	public void seDeplacer()
@@ -74,9 +68,6 @@ public class Proie extends Agent implements Observer{
 		
 				else if((this.world.getCellHeight(this.x,( this.y - 1 + this.world.getWidth() ) % this.world.getHeight() )>=0 )  )
 					this.y = ( this.y - 1 +  this.world.getHeight() ) % this.world.getHeight() ;
-		
-		this.setChanged();
-		this.notifyObservers();
 		
 	}
 	
@@ -110,7 +101,7 @@ public class Proie extends Agent implements Observer{
 				this.vie -= 10;
 				this.brule--;
 			}
-			this.faim -= 5;
+			this.setFaim(-5);
 			
 			this.seDeplacer();
 			

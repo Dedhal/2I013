@@ -5,10 +5,11 @@
 package worlds;
 
 import java.util.ArrayList;
+
 import javax.media.opengl.GL2;
 
 import cellularautomata.*;
-
+import cellularobject.Cell;
 import objects.*;
 
 public abstract class World {
@@ -109,8 +110,8 @@ public abstract class World {
     
     // ---
     
-    abstract public int getCellValue(int x, int y); // used by the visualization code to call specific object display.
-    abstract public void setCellValue(int x, int y, int state);
+    abstract public Cell getCellValue(int x, int y); // used by the visualization code to call specific object display.
+    abstract public void setCellValue(int x, int y, Cell state);
     
     // ---- 
     
@@ -130,7 +131,7 @@ public abstract class World {
         return color;
     }
 
-	abstract public void displayObjectAt(World _myWorld, GL2 gl, int cellState, int x,
+	abstract public void displayObjectAt(World _myWorld, GL2 gl, Cell cellState, int x,
 			int y, double height, float offset,
 			float stepX, float stepY, float lenX, float lenY,
 			float normalizeHeight); 

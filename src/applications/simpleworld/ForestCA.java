@@ -466,12 +466,15 @@ public class ForestCA extends CellularAutomataInteger implements Observer {
 	    				{
 	    					this.setCellState(i,j,12);
 	    				}
+<<<<<<< HEAD
 	    				
 	    				else if ( Math.random() < 0.00001 ) // become a tree
 	    				{
 	    					this.setCellState(i,j,1);
 	    				}
 	    				
+=======
+>>>>>>> 62d87d6587b374d385065442adccd17367377180
 	    				else
 	    				{
 	    				
@@ -541,6 +544,7 @@ public class ForestCA extends CellularAutomataInteger implements Observer {
 	    						this.getCellState( i , (j+_dy+1)%(_dy) ) == 4 ||
 	    						this.getCellState( i , (j+_dy-1)%(_dy) ) == 4)&&
 	    						(Math.random() < 0.001)
+<<<<<<< HEAD
 	    					)
 	    					
 	    				{
@@ -556,6 +560,8 @@ public class ForestCA extends CellularAutomataInteger implements Observer {
     							this.getCellState( (i+_dx-1)%(_dx)  , (j+_dy-1)%(_dy) ) == 4 ||
     							this.getCellState( (i+_dx+1)%(_dx)  , (j+_dy-1)%(_dy) ) == 4)&&
     							(Math.random() < 0.0005)
+=======
+>>>>>>> 62d87d6587b374d385065442adccd17367377180
 	    					)
 	    					
 	    				{
@@ -563,6 +569,24 @@ public class ForestCA extends CellularAutomataInteger implements Observer {
 	    				this.setCellState(i,j,4);	
 	    					
 	    				}
+<<<<<<< HEAD
+=======
+	    					    				
+	    				
+	    				else if ( 
+	    						(this.getCellState( (i+_dx-1)%(_dx) , (j+_dy+1)%(_dy)) == 4 ||
+    							this.getCellState( (i+_dx+1)%(_dx) , (j+_dy+1)%(_dy) ) == 4 ||
+    							this.getCellState( (i+_dx-1)%(_dx)  , (j+_dy-1)%(_dy) ) == 4 ||
+    							this.getCellState( (i+_dx+1)%(_dx)  , (j+_dy-1)%(_dy) ) == 4)&&
+    							(Math.random() < 0.0005)
+	    					)
+	    					
+	    				{
+	    					
+	    				this.setCellState(i,j,4);	
+	    					
+	    				}
+>>>>>>> 62d87d6587b374d385065442adccd17367377180
 	    				else if(Math.random()<0.0000001){
 	    					this.setCellState(i, j, 4);
 	    				}
