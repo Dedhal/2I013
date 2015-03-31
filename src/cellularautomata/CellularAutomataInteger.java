@@ -25,15 +25,20 @@ public class CellularAutomataInteger extends CellularAutomata {
 		this.world = __world;
 		Buffer0 = new Cell[_dx][_dy];
 		Buffer1 = new Cell[_dx][_dy];
+		Buffer1[0][0] = new Cell(0,0);
+		Buffer1[0][0].SetHauteurMax((float)this.world.getMaxEverHeight());
+	
 		h=0;
 	    for ( int x = 0 ; x != _dx ; x++ )
 	    	for ( int y = 0 ; y != _dy ; y++ )
 	    	{
-	    		float f=(float)this.world.getCellHeight(x, y)/(float)this.world.getMaxEverHeight();
+	    		
     			Buffer0[x][y]=new Cell(x,y);
-    			Buffer0[x][y].SetCellColor(f);
+    			Buffer0[x][y].SetHauteur((float)this.world.getCellHeight(x, y));
+    			Buffer0[x][y].SetCellColor();
     			Buffer1[x][y]=new Cell(x,y);
-    			Buffer1[x][y].SetCellColor(f);
+    			Buffer1[x][y].SetHauteur((float)this.world.getCellHeight(x, y));
+    			Buffer1[x][y].SetCellColor();
 	    	}
 	}
 	
@@ -344,23 +349,17 @@ public class CellularAutomataInteger extends CellularAutomata {
 			if(PopArbreFeuilles(i,j,0.00008)) setCellState(i,j, new Arbre(i,j));
 
 			else {
-				float f=(float)this.world.getCellHeight(i, j)/(float)this.world.getMaxEverHeight();
 				setCellState(i,j,getCellState(i,j));
-				getCellState(i,j).SetCellColor(f);
+				getCellState(i,j).SetHauteur((float)this.world.getCellHeight(i, j));
+				getCellState(i,j).SetCellColor();
 			}
-		}
-			
-
-		else if(Math.random()<0.000001) setCellState(i,j, new Arbre(i,j));
-
-			
-		
+		}			
+		else if(Math.random()<0.000001) setCellState(i,j, new Arbre(i,j));				
 		else { 
 			
-		float f=(float)this.world.getCellHeight(i, j)/(float)this.world.getMaxEverHeight();
 			setCellState(i,j,getCellState(i,j));
-			getCellState(i,j).SetCellColor(f);
-
+			getCellState(i,j).SetHauteur((float)this.world.getCellHeight(i, j));
+			getCellState(i,j).SetCellColor();
 		}
 		
 		
@@ -368,10 +367,10 @@ public class CellularAutomataInteger extends CellularAutomata {
 	
 	public void StepCendre(int i, int j){
 	
-		float f=(float)this.world.getCellHeight(i, j)/(float)this.world.getMaxEverHeight();
 		if(((Cendre)getCellState(i,j)).GetCendre()==0) {
 			setCellState(i,j, new Cell(i,j));
-			getCellState(i,j).SetCellColor(f);
+			getCellState(i,j).SetHauteur((float)this.world.getCellHeight(i, j));
+			getCellState(i,j).SetCellColor();
 		}
 		else {
 			((Cendre)getCellState(i,j)).step();
@@ -401,6 +400,10 @@ public class CellularAutomataInteger extends CellularAutomata {
 		if(herbes.GetFeu()){
 
 			if(herbes.GetVie()<=0) setCellState(i,j,new Cendre(i,j));
+			else{
+				herbes.step();
+				setCellState(i,j,this.getCellState(i, j));
+			}
 
 		}
 		else{
@@ -412,6 +415,12 @@ public class CellularAutomataInteger extends CellularAutomata {
 			}
 		}
 		setCellState(i,j,this.getCellState(i, j));
+		
+	}
+	
+	public void StepEau(int i, int j){
+		
+		
 		
 	}
 	
