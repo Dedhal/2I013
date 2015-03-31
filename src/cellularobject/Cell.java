@@ -20,14 +20,18 @@ public class Cell {
 	
 	}
 	
+
+	public int getStatut()
+	{
+		return Statue;
+	}
+	
+
 	public float[] GetColor(){					
 		return color;
 	}
 	
 
-	
-
-	
 	public void step(){
 		
 		

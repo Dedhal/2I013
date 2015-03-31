@@ -337,10 +337,12 @@ public class CellularAutomataInteger extends CellularAutomata {
 		
 		if(PopFeuilles(i,j)) setCellState(i,j, new Feuilles(i,j));
 			
-		else if(PopHerbes(i,j,0.0002)) setCellState(i,j, new Herbes(i,j));
+
+		else if(PopHerbes(i,j,0.0008)) setCellState(i,j, new Herbes(i,j));
 		
 		else if(PlaceLibreArbre(i,j)){
-			if(PopArbreFeuilles(i,j,0.002)) setCellState(i,j, new Arbre(i,j));
+			if(PopArbreFeuilles(i,j,0.00008)) setCellState(i,j, new Arbre(i,j));
+
 			else {
 				float f=(float)this.world.getCellHeight(i, j)/(float)this.world.getMaxEverHeight();
 				setCellState(i,j,getCellState(i,j));
@@ -348,7 +350,9 @@ public class CellularAutomataInteger extends CellularAutomata {
 			}
 		}
 			
-		else if(Math.random()<0.0000001) setCellState(i,j, new Arbre(i,j));
+
+		else if(Math.random()<0.000001) setCellState(i,j, new Arbre(i,j));
+
 			
 		
 		else { 
@@ -395,7 +399,9 @@ public class CellularAutomataInteger extends CellularAutomata {
 	public void StepHerbes(int i, int j){
 		Herbes herbes=(Herbes)getCellState(i,j);
 		if(herbes.GetFeu()){
-			if(herbes.GetVie()==0) setCellState(i,j,new Cendre(i,j));
+
+			if(herbes.GetVie()<=0) setCellState(i,j,new Cendre(i,j));
+
 		}
 		else{
 			if(FeuHerbesFeuilles(i,j,0.5,0.1)) herbes.SetFeu(true);

@@ -74,7 +74,6 @@ public class WorldOfTrees extends World {
     		else
     		{
     			uniqueDynamicObjects.add(new Proie(x,y ,this));
-    			uniqueDynamicObjects.get(uniqueDynamicObjects.size()-1).addObserver(cellularAutomata);
     		}
     	}
     	

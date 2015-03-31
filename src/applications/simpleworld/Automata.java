@@ -10,9 +10,13 @@ import cellularobject.Herbes;
 import cellularobject.EauProfonde;
 import worlds.World;
 
+
 import java.util.*;
 
 public class Automata extends CellularAutomataInteger implements Observer {
+
+public class Automata extends CellularAutomataInteger implements ProieListener {
+
 	CellularAutomataDouble _cellsHeightValuesCA;
 
 	public Automata(World __world, int __dx , int __dy, CellularAutomataDouble cellsHeightValuesCA ) {
@@ -22,12 +26,14 @@ public class Automata extends CellularAutomataInteger implements Observer {
 
 	}
 	
+
 	public void update(Observable obs, Object obj)
 	{
 		
 	}
 	
 	
+
 	public void init()
 	{
 		for ( int x = 0 ; x != _dx ; x++ )
@@ -83,9 +89,16 @@ public class Automata extends CellularAutomataInteger implements Observer {
     				this.world.cellsColorValues.setCellState(x, y, color);
     			}
     			else if(this.getCellState(x, y) instanceof Herbes) {
-    				this.StepHerbes(x, y);
-    				color=this.getCellState(x, y).GetColor();
-    				this.world.cellsColorValues.setCellState(x, y, color);
+
+    				if(((Herbes)this.getCellState(x, y)).GetVie() <= 0)
+    					this.setCellState(x, y, new Cendre(x, y));
+    				else
+    				{
+    					this.StepHerbes(x, y);
+    					color=this.getCellState(x, y).GetColor();
+    					this.world.cellsColorValues.setCellState(x, y, color);
+    				}
+
     			}
     			else if(this.getCellState(x, y) instanceof EauProfonde) {
     				this.setCellState(x, y, new EauProfonde(x,y));
@@ -108,6 +121,26 @@ public class Automata extends CellularAutomataInteger implements Observer {
     		}
 		this.swapBuffer();
 	}
+
+
+	@Override
+	public void SeNourrir(Proie p) {
+		int[] coordinates = p.getCoordinate();
+		
+		p.setFaim(10);
+		
+		if(p.getFaim() > p.getFaimMax())
+			p.setFaim(p.getFaimMax());
+		
+		this.setCellState(coordinates[0], coordinates[1], new Cell(coordinates[0], coordinates[1]));
+	}
+
+	@Override
+	public void Deplacement(Proie p) {
+	
+		
+	}
+
 	
 
 }

@@ -3,9 +3,8 @@
 // date of creation: 2013-1-12
 
 package cellularautomata;
-import java.util.*;
 
-public abstract class CellularAutomata extends Observable {
+public abstract class CellularAutomata {
 
 	protected int _dx;
 	protected int _dy;
