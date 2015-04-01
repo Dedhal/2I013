@@ -8,6 +8,7 @@ public class EauProfonde extends Cell {
 		color[0] = 0.f;
 		color[1] = 0.f;
 		color[2] = 0.3f;	
+		
 	}
 
 }

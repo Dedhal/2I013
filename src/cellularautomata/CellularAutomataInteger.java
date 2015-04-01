@@ -5,6 +5,7 @@
 package cellularautomata;
 
 import worlds.World;
+import cellularobject.Eau;
 import cellularobject.Cell;
 import cellularobject.Arbre;
 import cellularobject.Cendre;
@@ -12,40 +13,39 @@ import cellularobject.Feuilles;
 import cellularobject.Herbes;
 import cellularobject.EauProfonde;
 
+import java.util.*;
+
 public class CellularAutomataInteger extends CellularAutomata {
 
 	protected Cell Buffer0[][];
 	protected Cell Buffer1[][];
+	protected double EauTmp[][];
 	protected World world;
 	protected double h;//Humidite, taux de combustion spontanne
-
-	public CellularAutomataInteger ( int __dx , int __dy, boolean __buffering, World __world )
+	protected CellularAutomataDouble _cellsHeightValuesCA;
+	
+	public CellularAutomataInteger ( int __dx , int __dy, boolean __buffering, World __world ,CellularAutomataDouble cellsHeightValuesCA)
 	{
 		super(__dx,__dy,__buffering );
+		_cellsHeightValuesCA=cellsHeightValuesCA;
 		this.world = __world;
 		Buffer0 = new Cell[_dx][_dy];
 		Buffer1 = new Cell[_dx][_dy];
-		Buffer1[0][0] = new Cell(0,0);
-		Buffer1[0][0].SetHauteurMax((float)this.world.getMaxEverHeight());
-	
+		EauTmp= new double[_dx][_dy];
+		Buffer1[0][0] = new Cell(_cellsHeightValuesCA,this.world.getMaxEverHeight());
 		h=0;
 	    for ( int x = 0 ; x != _dx ; x++ )
 	    	for ( int y = 0 ; y != _dy ; y++ )
-	    	{
-	    		
+	    	{	    		
     			Buffer0[x][y]=new Cell(x,y);
-    			Buffer0[x][y].SetHauteur((float)this.world.getCellHeight(x, y));
-    			Buffer0[x][y].SetCellColor();
     			Buffer1[x][y]=new Cell(x,y);
-    			Buffer1[x][y].SetHauteur((float)this.world.getCellHeight(x, y));
-    			Buffer1[x][y].SetCellColor();
+    			EauTmp[x][y]=0;
 	    	}
 	}
 	
 	public Cell getCellState ( int __x, int __y )
 	{
 		checkBounds (__x,__y);
-		
 		Cell value;
 
 		if ( buffering == false )
@@ -350,16 +350,13 @@ public class CellularAutomataInteger extends CellularAutomata {
 
 			else {
 				setCellState(i,j,getCellState(i,j));
-				getCellState(i,j).SetHauteur((float)this.world.getCellHeight(i, j));
-				getCellState(i,j).SetCellColor();
+	
 			}
 		}			
 		else if(Math.random()<0.000001) setCellState(i,j, new Arbre(i,j));				
 		else { 
 			
 			setCellState(i,j,getCellState(i,j));
-			getCellState(i,j).SetHauteur((float)this.world.getCellHeight(i, j));
-			getCellState(i,j).SetCellColor();
 		}
 		
 		
@@ -369,8 +366,6 @@ public class CellularAutomataInteger extends CellularAutomata {
 	
 		if(((Cendre)getCellState(i,j)).GetCendre()==0) {
 			setCellState(i,j, new Cell(i,j));
-			getCellState(i,j).SetHauteur((float)this.world.getCellHeight(i, j));
-			getCellState(i,j).SetCellColor();
 		}
 		else {
 			((Cendre)getCellState(i,j)).step();
@@ -418,11 +413,97 @@ public class CellularAutomataInteger extends CellularAutomata {
 		
 	}
 	
-	public void StepEau(int i, int j){
-		
-		
+	public void StepEau(int i,int j){
+		if(((Eau)getCellState(i, j)).GetNiveauEau()<=0){
+			setCellState(i,j,new Cell(i,j));
+			//this.getCellState(i,j).SetCellColor();
+			
+		}else {
+			setCellState(i,j,this.getCellState(i, j));
+		}
 		
 	}
+	public void resetEauTmp(){
+	    for ( int x = 0 ; x != _dx ; x++ )
+	    	for ( int y = 0 ; y != _dy ; y++ ){
+	    	EauTmp[x][y]=0;	    		
+	    	}	    				
+	}
+	
+	public void StepLiquideTmp(){
+	    for ( int x = 0 ; x != _dx ; x++ )
+	    	for ( int y = 0 ; y != _dy ; y++ )
+	    	{	 
+	    		if(this.getCellState(x, y) instanceof Eau){
+	    			Eau eau=(Eau)this.getCellState(x, y);
+	    			double h1=999,h2=999,h3=999,h4=999;
+	    			
+	    			if(!(this.getCellState((x+_dx-1)%(_dx) , y) instanceof Arbre))
+	    				h1=this.getCellState((x+_dx-1)%(_dx) , y).GetHauteur();
+	    			if(!(this.getCellState((x+_dx+1)%(_dx) , y) instanceof Arbre))
+	    				h2= this.getCellState((x+_dx+1)%(_dx) , y).GetHauteur();
+	    			if(!(this.getCellState(x , (y+_dy+1)%(_dy)) instanceof Arbre))
+	    				h3=this.getCellState(x , (y+_dy+1)%(_dy)).GetHauteur();
+	    			if(!(this.getCellState(x , (y+_dy-1)%(_dy)) instanceof Arbre))
+	    				h4=this.getCellState(x , (y+_dy-1)%(_dy)).GetHauteur();
+
+    				double htmp=Math.min(Math.min(h1,h2), Math.min(h3,h4));
+    				if(htmp==999){
+    					
+    				}
+    				else if(htmp==h1)
+    				{
+    					if(eau.GetHauteur()<h1);   			    					
+    					else{    						
+    						double d;
+    						if(h1+eau.GetNiveauEau()<eau.GetHSansEau())   d=eau.GetNiveauEau();
+    						else d=(h1+eau.GetNiveauEau()-eau.GetHauteur())/2;
+    						EauTmp[(x+_dx-1)%_dx][y]=EauTmp[(x+_dx-1)%_dx][y]+d;
+   							EauTmp[x][y]=EauTmp[x][y]-d; 							 							   												
+    						}    									    						
+    				}
+    				else if(htmp==h2)
+    				{
+    					if(eau.GetHauteur()<h2);   			    					
+    					else
+    					{    						
+    						double d;
+    						if(h2+eau.GetNiveauEau()<eau.GetHSansEau())   d=eau.GetNiveauEau();
+    						else d=(h2+eau.GetNiveauEau()-eau.GetHauteur())/2;
+    						EauTmp[(x+_dx+1)%_dx][y]=EauTmp[(x+_dx+1)%_dx][y]+d;
+   							EauTmp[x][y]=EauTmp[x][y]-d; 							 							   												
+    					}    				
+    				}
+    				else if(htmp==h3)
+    				{
+    					if(eau.GetHauteur()<h3);   			    					
+    					else
+    					{    						
+    						double d;
+    						if(h3+eau.GetNiveauEau()<eau.GetHSansEau())   d=eau.GetNiveauEau();
+    						else d=(h3+eau.GetNiveauEau()-eau.GetHauteur())/2;
+    						EauTmp[x][(y+_dy+1)%(_dy)]=EauTmp[x][(y+_dy+1)%(_dy)]+d;
+   							EauTmp[x][y]=EauTmp[x][y]-d; 							 							   												
+    					}    				
+    				}
+    				else if(htmp==h4)
+    				{
+    					if(eau.GetHauteur()<h4);   			    					
+    					else
+    					{    						
+    						double d;
+    						if(h4+eau.GetNiveauEau()<eau.GetHSansEau())   d=eau.GetNiveauEau();
+    						else d=(h4+eau.GetNiveauEau()-eau.GetHauteur())/2;
+    						EauTmp[x][(y+_dy-1)%(_dy)]=EauTmp[x][(y+_dy-1)%(_dy)]+d;
+   							EauTmp[x][y]=EauTmp[x][y]-d; 							 							   												
+    					}    				
+    				}    			
+	    		}	    		
+	    	}
+				
+	}
+	
+
 	
 	
 }

@@ -1,28 +1,32 @@
 package applications.simpleworld;
 
 import cellularautomata.CellularAutomataDouble;
+
 import cellularautomata.CellularAutomataInteger;
 import cellularobject.Arbre;
 import cellularobject.Cell;
 import cellularobject.Cendre;
+import cellularobject.Eau;
 import cellularobject.Feuilles;
 import cellularobject.Herbes;
 import cellularobject.EauProfonde;
 import worlds.World;
 
 
+
 import java.util.*;
 
-public class Automata extends CellularAutomataInteger implements Observer {
+//public class Automata extends CellularAutomataInteger implements Observer {
 
-public class Automata extends CellularAutomataInteger implements ProieListener {
+//public class Automata extends CellularAutomataInteger implements ProieListener {
 
-	CellularAutomataDouble _cellsHeightValuesCA;
+public class Automata extends CellularAutomataInteger{
+
 
 	public Automata(World __world, int __dx , int __dy, CellularAutomataDouble cellsHeightValuesCA ) {
 		
-		super(__dx,__dy,true, __world ); 
-		_cellsHeightValuesCA=cellsHeightValuesCA;
+		super(__dx,__dy,true, __world , cellsHeightValuesCA); 
+		
 
 	}
 	
@@ -53,7 +57,7 @@ public class Automata extends CellularAutomataInteger implements ProieListener {
     			else
     			{
     				this.setCellState(x, y, new EauProfonde(x,y)); // water (ignore)
-    			}
+    			}    			
     		}
 		this.swapBuffer();
 		
@@ -61,22 +65,41 @@ public class Automata extends CellularAutomataInteger implements ProieListener {
 		
 		this.h=0.001;
     	this.swapBuffer();
+    	
 	}
 
 	public void step(){
+		
+		this.StepLiquideTmp();
 		
 		for ( int x = 0 ; x != _dx ; x++ )
     		for ( int y = 0 ; y != _dy ; y++ )
     		{
     			float[] color;
-    			if(this.getCellState(x, y) instanceof Arbre){
-    				this.StepArbre(x, y);
+    			if(EauTmp[x][y]!=0){
+    				if(!(this.getCellState(x, y) instanceof Eau)) this.setCellState(x, y, new Eau(x,y,EauTmp[x][y]));  
+    				else{
+    					((Eau)this.getCellState(x, y)).SetNiveauEau(EauTmp[x][y]);
+    					this.setCellState(x, y, this.getCellState(x,y));
+    				}
+
+    				color=this.getCellState(x, y).GetColor();
+    				this.world.cellsColorValues.setCellState(x, y, color);
+    				
+    			}
+    			
+    			else if(this.getCellState(x, y) instanceof Eau){
+    				this.StepEau(x, y);
     				color=this.getCellState(x, y).GetColor();
     				this.world.cellsColorValues.setCellState(x, y, color);
     			}
     			
-
-    			
+    			else if(this.getCellState(x, y) instanceof Arbre){
+    				this.StepArbre(x, y);
+    				color=this.getCellState(x, y).GetColor();
+    				this.world.cellsColorValues.setCellState(x, y, color);
+    			}
+    			   			
     			else if(this.getCellState(x, y) instanceof Cendre) {
     				this.StepCendre(x, y);
     				color=this.getCellState(x, y).GetColor();
@@ -119,10 +142,12 @@ public class Automata extends CellularAutomataInteger implements ProieListener {
     				
     			}
     		}
+		this.resetEauTmp();
+		this.setCellState(154, 164, new Eau(154, 164, 0.01));
 		this.swapBuffer();
 	}
 
-
+	/*
 	@Override
 	public void SeNourrir(Proie p) {
 		int[] coordinates = p.getCoordinate();
@@ -140,7 +165,7 @@ public class Automata extends CellularAutomataInteger implements ProieListener {
 	
 		
 	}
+	*/
+}	
 
-	
 
-}
