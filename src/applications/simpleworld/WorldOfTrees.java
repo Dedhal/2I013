@@ -13,7 +13,7 @@ import worlds.World;
 
 public class WorldOfTrees extends World {
 
-    protected Automata cellularAutomata;
+
 
     public void init ( int __dxCA, int __dyCA, double[][] landscape )
     {
@@ -117,7 +117,9 @@ public class WorldOfTrees extends World {
     		
     	}
     }
-
+    public void test(){
+    	
+    }
     public Cell getCellValue(int x, int y) // used by the visualization code to call specific object display.
     {
     	return cellularAutomata.getCellState(x%dxCA,y%dyCA);

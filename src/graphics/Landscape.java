@@ -5,7 +5,7 @@
 package graphics;
 
 import worlds.*;
-
+import applications.simpleworld.WorldOfTrees;
 import java.awt.*;
 import java.awt.event.*;
 
@@ -75,9 +75,9 @@ public class Landscape implements GLEventListener, KeyListener, MouseListener{
 		 * 
 		 * 
 		 * Bonnes pratiques:
-		 * - gl.Begin() ... gl.glEnd(); : faire un minimum d'appel, idéalement un par itération. (gain de 50% à 100% ici)
-		 * - gl.glCullFace(GL.GL_FRONT); ... gl.glEnable(GL.GL_CULL_FACE); : si la scene le permet, réduit le nb de polyg a afficher.
-		 * - TRIANGLE SPLIT permet de réduire le nombre d'appels à OpenGL (gl.begin et end)
+		 * - gl.Begin() ... gl.glEnd(); : faire un minimum d'appel, idÊñ¨lement un par itÂ±çation. (gain de 50% ÔøΩ 100% ici)
+		 * - gl.glCullFace(GL.GL_FRONT); ... gl.glEnable(GL.GL_CULL_FACE); : si la scene le permet, r‰ªïuit le nb de polyg a afficher.
+		 * - TRIANGLE SPLIT permet de r‰ªïuire le nombre d'appels ÔøΩ OpenGL (gl.begin et end)
 		 * - each call to gl.glColor3f costs a lot (speed is down by two if no call!)
 		 */
 	
@@ -234,7 +234,7 @@ public class Landscape implements GLEventListener, KeyListener, MouseListener{
 
 
                 gl.glShadeModel(GLLightingFunc.GL_SMOOTH);
-                gl.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+        		gl.glClearColor(0.f, 0.f, 0.f, 0.0f);
                 gl.glClearDepth(1.0f);
                 gl.glEnable(GL.GL_DEPTH_TEST);
                 gl.glDepthFunc(GL.GL_LEQUAL);
@@ -364,6 +364,27 @@ public class Landscape implements GLEventListener, KeyListener, MouseListener{
                 //System.out.println("rotateT = " + rotateT );
                 
                 it++;
+                switch(it%3000){
+                
+                	case 0 :
+                		gl.glClearColor(0.f, 0.f, 0.f, 0.0f);
+                		break;
+                		
+                	case 750 :
+                        gl.glClearColor(0.3f, 0.1f, 0.5f, 0.0f);
+                        break;
+                        
+                	case 1500 :
+                        gl.glClearColor(0.4f, 0.4f, 1f, 0.0f);
+                        break;
+                    
+                	case 2250 :
+                        gl.glClearColor(0.5f, 0.1f, 0.1f, 0.0f);
+                                
+                }
+                	
+                
+                
                 //if ( it % 30 == 0 )//&& it != 0)
                 //	movingIt++;
                 //movingIt=0;
@@ -499,11 +520,7 @@ public class Landscape implements GLEventListener, KeyListener, MouseListener{
         @Override
         public void reshape(GLAutoDrawable gLDrawable, int x, int y, int width, int height) {
         		if ( this.it == 0 )
-		        	System.out.println( "W"+"o"+"r"+"l"+"d"+" "+"O"+
-		            "f"+" "+"C"+"e"+"l"+"l"+"s"+" "+"-"+" "+"n"+"i"+
-		            "c"+"o"+"l"+"a"+"s"+"."+"b"+"r"+"e"+"d"+"e"+"c"+
-		            "h"+"e"+(char)(0x40)+"u"+"p"+"m"+"c"+"."+"f"+"r"+
-		            ","+" "+"2"+"0"+"1"+"3"+"\n");
+		        	System.out.println("Projet Vie Artificielle\n" );
         		GL2 gl = gLDrawable.getGL().getGL2();
                 final float aspect = (float) width / (float) height;
                 gl.glMatrixMode(GLMatrixFunc.GL_PROJECTION);
@@ -630,10 +647,35 @@ public class Landscape implements GLEventListener, KeyListener, MouseListener{
 			case KeyEvent.VK_Z:
 				break;
 			case KeyEvent.VK_S:
+				break;
+			case KeyEvent.VK_U:
+				
+				this._myWorld.toggle_eruption();
 				break; 
+			case KeyEvent.VK_A:
+				
+				switch(this._myWorld.getSaison()){
+				case 0 : 
+					System.out.println("Hivers");
+					break;
+				case 1 : 
+					System.out.println("Printemps");
+					break;
+				case 2 : 
+					System.out.println("Ete");
+					break;
+				case 3 : 
+					System.out.println("Automne");
+					break;
+				}
+				
+				break; 
+				
 			case KeyEvent.VK_H:
 				System.out.println(
 						"Help:\n" +
+						"           [a] get saison\n" +
+						"           [u] eruption\n" +
 						"           [v] change view\n" +
 						"           [o] objects display on/off\n" +
 						"           [1] decrease altitude booster\n" +

@@ -10,6 +10,7 @@ public class Cell {
 	protected double hauteur;
 	protected static double hauteurM ;
 	protected static CellularAutomataDouble cellsHeightValuesCA;
+	protected static double neige;
 	
 	public Cell(CellularAutomataDouble Height,double M){
 		cellsHeightValuesCA =Height;
@@ -31,7 +32,7 @@ public class Cell {
 	}
 	
 	public void SetCellColor(){
-		float f=(float)(hauteur/hauteurM);
+		float f=(float)((hauteur+neige)/(hauteurM+neige));
 		color[0] = f;
 		color[1] = 0.9f + 0.1f * f;
 		color[2] = f;
@@ -58,6 +59,8 @@ public class Cell {
 		
 	}
 	
-	
+	public void setNeige(double d){
+		neige=d;
+	}
 	
 }

@@ -5,6 +5,8 @@
 package cellularautomata;
 
 import worlds.World;
+
+import cellularobject.Obsidienne;
 import cellularobject.Eau;
 import cellularobject.Cell;
 import cellularobject.Arbre;
@@ -12,6 +14,7 @@ import cellularobject.Cendre;
 import cellularobject.Feuilles;
 import cellularobject.Herbes;
 import cellularobject.EauProfonde;
+import cellularobject.Lave;
 
 import java.util.*;
 
@@ -20,9 +23,13 @@ public class CellularAutomataInteger extends CellularAutomata {
 	protected Cell Buffer0[][];
 	protected Cell Buffer1[][];
 	protected double EauTmp[][];
+	protected double LaveTmp[][];
 	protected World world;
 	protected double h;//Humidite, taux de combustion spontanne
 	protected CellularAutomataDouble _cellsHeightValuesCA;
+	protected double tauxfire;
+	protected double tauxpop;
+	protected double neige;
 	
 	public CellularAutomataInteger ( int __dx , int __dy, boolean __buffering, World __world ,CellularAutomataDouble cellsHeightValuesCA)
 	{
@@ -32,14 +39,19 @@ public class CellularAutomataInteger extends CellularAutomata {
 		Buffer0 = new Cell[_dx][_dy];
 		Buffer1 = new Cell[_dx][_dy];
 		EauTmp= new double[_dx][_dy];
+		LaveTmp=new double[_dx][_dy];
 		Buffer1[0][0] = new Cell(_cellsHeightValuesCA,this.world.getMaxEverHeight());
 		h=0;
+		tauxfire=0.5;
+		tauxpop=0.0008;
+		neige=0;
 	    for ( int x = 0 ; x != _dx ; x++ )
 	    	for ( int y = 0 ; y != _dy ; y++ )
 	    	{	    		
     			Buffer0[x][y]=new Cell(x,y);
     			Buffer1[x][y]=new Cell(x,y);
     			EauTmp[x][y]=0;
+    			LaveTmp[x][y]=0;
 	    	}
 	}
 	
@@ -324,13 +336,16 @@ public class CellularAutomataInteger extends CellularAutomata {
 				setCellState(i,j,arbre);
 			}
 		}else{
-			if(FeuFeuillesArbre(i,j, 0.5)) {
+			if(FeuFeuillesArbre(i,j, tauxfire)) {
 				arbre.SetFeu(true);	
 				setCellState(i,j,arbre);
 			}
 			else {
 				arbre.step();
-				if(Math.random()<h) arbre.SetFeu(true);
+				if(Math.random()<h/20) {
+					arbre.SetFeu(true);
+					System.out.println("Arbre feu \n");
+				}
 			}
 			setCellState(i,j,arbre);
 		}		
@@ -343,17 +358,17 @@ public class CellularAutomataInteger extends CellularAutomata {
 		if(PopFeuilles(i,j)) setCellState(i,j, new Feuilles(i,j));
 			
 
-		else if(PopHerbes(i,j,0.0008)) setCellState(i,j, new Herbes(i,j));
+		else if(PopHerbes(i,j,tauxpop)) setCellState(i,j, new Herbes(i,j));
 		
 		else if(PlaceLibreArbre(i,j)){
-			if(PopArbreFeuilles(i,j,0.00008)) setCellState(i,j, new Arbre(i,j));
+			if(PopArbreFeuilles(i,j,tauxpop/10)) setCellState(i,j, new Arbre(i,j));
 
 			else {
 				setCellState(i,j,getCellState(i,j));
 	
 			}
 		}			
-		else if(Math.random()<0.000001) setCellState(i,j, new Arbre(i,j));				
+		else if(Math.random()<(tauxpop/80)) setCellState(i,j, new Arbre(i,j));				
 		else { 
 			
 			setCellState(i,j,getCellState(i,j));
@@ -372,9 +387,7 @@ public class CellularAutomataInteger extends CellularAutomata {
 		setCellState(i,j,this.getCellState(i, j));
 		}
 	}
-	
-	
-	
+			
 	public void StepFeuilles(int i, int j){
 		if(PopFeuilles(i,j)==false) {
 			setCellState(i,j, new Cendre(i,j));	
@@ -383,8 +396,8 @@ public class CellularAutomataInteger extends CellularAutomata {
 			((Feuilles)getCellState(i,j)).SetFeu(true);
 		}
 		//else if(PopFeuilles(i,j))	((Feuilles)getCellState(i,j)).SetFeu(false);			
-		else if(FeuFeuillesFeuilles(i,j,0.4,0.1)) ((Feuilles)getCellState(i,j)).SetFeu(true);
-		else if(FeuHerbesFeuilles(i,j,0.1,0.02)) ((Feuilles)getCellState(i,j)).SetFeu(true);
+		else if(FeuFeuillesFeuilles(i,j,0.4,tauxfire/5)) ((Feuilles)getCellState(i,j)).SetFeu(true);
+		else if(FeuHerbesFeuilles(i,j,0.1,tauxfire/10)) ((Feuilles)getCellState(i,j)).SetFeu(true);
 		else {
 			setCellState(i,j, new Feuilles(i,j));
 		}
@@ -399,24 +412,50 @@ public class CellularAutomataInteger extends CellularAutomata {
 				herbes.step();
 				setCellState(i,j,this.getCellState(i, j));
 			}
+			
 
 		}
+		else if(PlaceLibreArbre(i,j)&&PopArbreFeuilles(i,j,tauxpop/5)){
+			setCellState(i,j, new Arbre(i,j));
+			setCellState(i,j,getCellState(i,j));		
+		}
 		else{
-			if(FeuHerbesFeuilles(i,j,0.5,0.1)) herbes.SetFeu(true);
-			else if(FeuFeuillesFeuilles(i,j,0.2,0.05)) herbes.SetFeu(true);
+			if(FeuHerbesFeuilles(i,j,tauxfire,tauxfire/5)) herbes.SetFeu(true);
+			else if(FeuFeuillesFeuilles(i,j,tauxfire/2,tauxfire/10)) herbes.SetFeu(true);
 			else {
 				herbes.step();
-				if(Math.random()<h) herbes.SetFeu(true);
+				if(Math.random()<h/10){
+					herbes.SetFeu(true);
+					System.out.println("Herbe feu\n");
+				}				
 			}
+			setCellState(i,j,herbes);
 		}
-		setCellState(i,j,this.getCellState(i, j));
 		
 	}
 	
+	public void StepLave(int i,int j){
+		if(((Lave)getCellState(i,j)).GetVie()<=0){
+			setCellState(i,j, new Cell(i,j));
+		}
+		else {
+			((Lave)getCellState(i,j)).step();
+		}
+	}
+	
+	public void resetLaveTmp(){
+	    for ( int x = 0 ; x != _dx ; x++ )
+	    	for ( int y = 0 ; y != _dy ; y++ ){
+	    	LaveTmp[x][y]=0;	    		
+	    }	 
+		
+	}
+
+
 	public void StepEau(int i,int j){
 		if(((Eau)getCellState(i, j)).GetNiveauEau()<=0){
 			setCellState(i,j,new Cell(i,j));
-			//this.getCellState(i,j).SetCellColor();
+
 			
 		}else {
 			setCellState(i,j,this.getCellState(i, j));
@@ -430,11 +469,93 @@ public class CellularAutomataInteger extends CellularAutomata {
 	    	}	    				
 	}
 	
+
+	
 	public void StepLiquideTmp(){
 	    for ( int x = 0 ; x != _dx ; x++ )
 	    	for ( int y = 0 ; y != _dy ; y++ )
 	    	{	 
-	    		if(this.getCellState(x, y) instanceof Eau){
+	    		if(this.getCellState(x, y) instanceof Lave){
+	    			Lave lave=(Lave)this.getCellState(x, y);
+	    			double h1,h2,h3,h4;
+    				h1=this.getCellState((x+_dx-1)%(_dx) , y).GetHauteur();
+    				h2= this.getCellState((x+_dx+1)%(_dx) , y).GetHauteur();
+    				h3=this.getCellState(x , (y+_dy+1)%(_dy)).GetHauteur();
+    				h4=this.getCellState(x , (y+_dy-1)%(_dy)).GetHauteur();
+    				
+    				double htmp=Math.min(Math.min(h1,h2), Math.min(h3,h4));
+    				
+    				if(htmp==h1)
+    				{
+    					if(lave.GetHauteur()<h1||(lave.Gettmp()!=2));
+    					else{
+    						double d;
+    						if(h1+lave.GetNiveauLave()<lave.GetHSansLave()){
+    							d=(lave.GetNiveauLave())/2;
+    						}
+    						else{
+    							d=(h1+lave.GetNiveauLave()-lave.GetHSansLave())/4;
+    						}
+    					LaveTmp[(x+_dx-1)%_dx][y]=LaveTmp[(x+_dx-1)%_dx][y]+d;
+   						LaveTmp[x][y]=LaveTmp[x][y]-d; 							 							   												
+    					}    
+    						
+    				}
+    										
+    				
+    				else if(htmp==h2)
+    				{
+    					if(lave.GetHauteur()<h2||(lave.Gettmp()!=2));
+    					else{
+    						double d;
+    						if(h2+lave.GetNiveauLave()<lave.GetHSansLave()){
+    							d=(lave.GetNiveauLave())/2;
+    						}
+    						else{
+    							d=(h2+lave.GetNiveauLave()-lave.GetHSansLave())/4;
+    						}
+    					LaveTmp[(x+_dx+1)%_dx][y]=LaveTmp[(x+_dx+1)%_dx][y]+d;
+   						LaveTmp[x][y]=LaveTmp[x][y]-d;  						
+    				    }
+    				}
+    					
+    				else if(htmp==h3)
+        			{
+        				if(lave.GetHauteur()<h3||(lave.Gettmp()!=2));
+        				else{
+       						double d;
+       						if(h3+lave.GetNiveauLave()<lave.GetHSansLave()){
+       							d=(lave.GetNiveauLave())/2;
+       						}
+       						else{
+       							d=(h3+lave.GetNiveauLave()-lave.GetHSansLave())/4;
+       						}
+       					LaveTmp[x][(y+_dy+1)%(_dy)]=LaveTmp[x][(y+_dy+1)%(_dy)]+d;
+   						LaveTmp[x][y]=LaveTmp[x][y]-d; 	
+        				}
+   							
+        			}
+        				
+        			else if(htmp==h4)
+            		{
+            			if(lave.GetHauteur()<h4||(lave.Gettmp()!=2));
+            			else{
+           					double d;
+           					if(h4+lave.GetNiveauLave()<lave.GetHSansLave()){
+           						d=(lave.GetNiveauLave())/2;
+           					}
+           					else{
+           						d=(h4+lave.GetNiveauLave()-lave.GetHSansLave())/4;
+           					}
+           				LaveTmp[x][(y+_dy-1)%(_dy)]=LaveTmp[x][(y+_dy-1)%(_dy)]+d;
+       					LaveTmp[x][y]=LaveTmp[x][y]-d; 	
+            			}		
+            		}	
+    					
+	    		}
+    				
+        		
+        		else if(this.getCellState(x, y) instanceof Eau){
 	    			Eau eau=(Eau)this.getCellState(x, y);
 	    			double h1=999,h2=999,h3=999,h4=999;
 	    			
@@ -456,8 +577,12 @@ public class CellularAutomataInteger extends CellularAutomata {
     					if(eau.GetHauteur()<h1);   			    					
     					else{    						
     						double d;
-    						if(h1+eau.GetNiveauEau()<eau.GetHSansEau())   d=eau.GetNiveauEau();
-    						else d=(h1+eau.GetNiveauEau()-eau.GetHauteur())/2;
+    						if(h1+eau.GetNiveauEau()<eau.GetHSansEau()){
+    							d=eau.GetNiveauEau();
+    						}
+    						else{
+    							d=(h1+eau.GetNiveauEau()-eau.GetHSansEau())/2;
+    						}
     						EauTmp[(x+_dx-1)%_dx][y]=EauTmp[(x+_dx-1)%_dx][y]+d;
    							EauTmp[x][y]=EauTmp[x][y]-d; 							 							   												
     						}    									    						
@@ -468,8 +593,12 @@ public class CellularAutomataInteger extends CellularAutomata {
     					else
     					{    						
     						double d;
-    						if(h2+eau.GetNiveauEau()<eau.GetHSansEau())   d=eau.GetNiveauEau();
-    						else d=(h2+eau.GetNiveauEau()-eau.GetHauteur())/2;
+    						if(h2+eau.GetNiveauEau()<eau.GetHSansEau()){
+    							d=eau.GetNiveauEau();
+    						}
+    						else{
+    							d=(h2+eau.GetNiveauEau()-eau.GetHSansEau())/2;
+    						}
     						EauTmp[(x+_dx+1)%_dx][y]=EauTmp[(x+_dx+1)%_dx][y]+d;
    							EauTmp[x][y]=EauTmp[x][y]-d; 							 							   												
     					}    				
@@ -480,8 +609,12 @@ public class CellularAutomataInteger extends CellularAutomata {
     					else
     					{    						
     						double d;
-    						if(h3+eau.GetNiveauEau()<eau.GetHSansEau())   d=eau.GetNiveauEau();
-    						else d=(h3+eau.GetNiveauEau()-eau.GetHauteur())/2;
+    						if(h3+eau.GetNiveauEau()<eau.GetHSansEau()){ 
+    							d=eau.GetNiveauEau();
+    						}
+    						else {
+    							d=(h3+eau.GetNiveauEau()-eau.GetHSansEau())/2;
+    						}
     						EauTmp[x][(y+_dy+1)%(_dy)]=EauTmp[x][(y+_dy+1)%(_dy)]+d;
    							EauTmp[x][y]=EauTmp[x][y]-d; 							 							   												
     					}    				
@@ -492,18 +625,27 @@ public class CellularAutomataInteger extends CellularAutomata {
     					else
     					{    						
     						double d;
-    						if(h4+eau.GetNiveauEau()<eau.GetHSansEau())   d=eau.GetNiveauEau();
-    						else d=(h4+eau.GetNiveauEau()-eau.GetHauteur())/2;
+    						if(h4+eau.GetNiveauEau()<eau.GetHSansEau()){ 							
+    							d=eau.GetNiveauEau();
+    						}
+    						else {
+    							d=(h4+eau.GetNiveauEau()-eau.GetHSansEau())/2;
+    						}
     						EauTmp[x][(y+_dy-1)%(_dy)]=EauTmp[x][(y+_dy-1)%(_dy)]+d;
    							EauTmp[x][y]=EauTmp[x][y]-d; 							 							   												
     					}    				
-    				}    			
-	    		}	    		
-	    	}
-				
+    				}
+    				   				
+	    		 	
+        		
+        	}	    		
+	    }
 	}
+}
+				
 	
+	    	
 
 	
 	
-}
+

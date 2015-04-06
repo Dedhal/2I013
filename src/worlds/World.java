@@ -8,12 +8,13 @@ import java.util.ArrayList;
 
 import javax.media.opengl.GL2;
 
+import applications.simpleworld.Automata;
 import cellularautomata.*;
 import cellularobject.Cell;
 import objects.*;
 
 public abstract class World {
-	
+    protected Automata cellularAutomata;
 	protected int iteration = 0;
 
 	protected ArrayList<UniqueObject> uniqueObjects = new ArrayList<UniqueObject>();
@@ -151,5 +152,11 @@ public abstract class World {
 	public double getMaxEverHeight() { return this.maxEverHeightValue; }
 	public double getMinEverHeight() { return this.minEverHeightValue; }
 	
+	public void toggle_eruption(){
+		this.cellularAutomata.toggle_eruption();
+	}
 
+	public int getSaison(){
+		return this.cellularAutomata.getSaison();
+	}
 }
