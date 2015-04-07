@@ -159,4 +159,10 @@ public abstract class World {
 	public int getSaison(){
 		return this.cellularAutomata.getSaison();
 	}
+	public void nextSaison(){
+		this.cellularAutomata.nextSaison();
+	}
+	public void SetDesert(){
+		this.cellularAutomata.SetDesert();
+	}
 }

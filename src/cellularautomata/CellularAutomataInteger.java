@@ -298,6 +298,22 @@ public class CellularAutomataInteger extends CellularAutomata {
 		return false;	
 	}
 	
+	public boolean NearLave(int i, int j){
+		if((getCellState(i, j) instanceof Lave||
+				getCellState( (i+_dx-1)%(_dx) , j ) instanceof Lave ||
+				getCellState( (i+_dx+1)%(_dx) , j ) instanceof Lave ||
+				getCellState( i , (j+_dy+1)%(_dy) ) instanceof Lave ||			
+				getCellState( i , (j+_dy-1)%(_dy) ) instanceof Lave ||
+				getCellState( (i+_dx-1)%(_dx) , (j+_dy+1)%(_dy)) instanceof Lave ||
+				getCellState( (i+_dx+1)%(_dx) , (j+_dy+1)%(_dy) ) instanceof Lave ||
+				getCellState( (i+_dx-1)%(_dx)  , (j+_dy-1)%(_dy) ) instanceof Lave ||
+				getCellState( (i+_dx+1)%(_dx)  , (j+_dy-1)%(_dy) ) instanceof Lave)    							
+				) {
+			return true;
+		}
+			else return false;		
+	}
+	
 	public boolean FeuHerbesFeuilles(int i,int j, double d1,double d2){
 		
 		if(getCellState((i+_dx-1)%(_dx) , j ) instanceof Herbes)
@@ -336,7 +352,7 @@ public class CellularAutomataInteger extends CellularAutomata {
 				setCellState(i,j,arbre);
 			}
 		}else{
-			if(FeuFeuillesArbre(i,j, tauxfire)) {
+			if((FeuFeuillesArbre(i,j, tauxfire))||NearLave(i,j)) {
 				arbre.SetFeu(true);	
 				setCellState(i,j,arbre);
 			}
@@ -344,7 +360,6 @@ public class CellularAutomataInteger extends CellularAutomata {
 				arbre.step();
 				if(Math.random()<h/20) {
 					arbre.SetFeu(true);
-					System.out.println("Arbre feu \n");
 				}
 			}
 			setCellState(i,j,arbre);
@@ -361,14 +376,15 @@ public class CellularAutomataInteger extends CellularAutomata {
 		else if(PopHerbes(i,j,tauxpop)) setCellState(i,j, new Herbes(i,j));
 		
 		else if(PlaceLibreArbre(i,j)){
-			if(PopArbreFeuilles(i,j,tauxpop/10)) setCellState(i,j, new Arbre(i,j));
+			if(PopArbreFeuilles(i,j,tauxpop/4)) setCellState(i,j, new Arbre(i,j));
 
 			else {
 				setCellState(i,j,getCellState(i,j));
 	
 			}
 		}			
-		else if(Math.random()<(tauxpop/80)) setCellState(i,j, new Arbre(i,j));				
+		else if(Math.random()<(tauxpop/100)) setCellState(i,j, new Arbre(i,j));	
+		else if(Math.random()<(tauxpop/65)) setCellState(i,j, new Herbes(i,j));	
 		else { 
 			
 			setCellState(i,j,getCellState(i,j));
@@ -392,7 +408,7 @@ public class CellularAutomataInteger extends CellularAutomata {
 		if(PopFeuilles(i,j)==false) {
 			setCellState(i,j, new Cendre(i,j));	
 		}
-		else if(FeuArbreFeuilles(i,j)) {
+		else if(FeuArbreFeuilles(i,j)||NearLave(i,j)) {
 			((Feuilles)getCellState(i,j)).SetFeu(true);
 		}
 		//else if(PopFeuilles(i,j))	((Feuilles)getCellState(i,j)).SetFeu(false);			
@@ -421,12 +437,12 @@ public class CellularAutomataInteger extends CellularAutomata {
 		}
 		else{
 			if(FeuHerbesFeuilles(i,j,tauxfire,tauxfire/5)) herbes.SetFeu(true);
-			else if(FeuFeuillesFeuilles(i,j,tauxfire/2,tauxfire/10)) herbes.SetFeu(true);
+			else if(FeuFeuillesFeuilles(i,j,tauxfire,tauxfire/5)) herbes.SetFeu(true);
 			else {
 				herbes.step();
-				if(Math.random()<h/10){
+				if((Math.random()<h/10)||NearLave(i,j)){
 					herbes.SetFeu(true);
-					System.out.println("Herbe feu\n");
+
 				}				
 			}
 			setCellState(i,j,herbes);

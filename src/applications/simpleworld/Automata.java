@@ -18,6 +18,8 @@ import worlds.World;
 
 
 
+
+
 import java.util.*;
 
 //public class Automata extends CellularAutomataInteger implements Observer {
@@ -28,7 +30,7 @@ public class Automata extends CellularAutomataInteger{
 
 	protected int saison;
 	protected boolean eruption;
-
+	protected boolean desert=false;
 	public Automata(World __world, int __dx , int __dy, CellularAutomataDouble cellsHeightValuesCA ) {
 		
 		super(__dx,__dy,true, __world , cellsHeightValuesCA); 
@@ -45,6 +47,29 @@ public class Automata extends CellularAutomataInteger{
 	
 	public int getSaison(){
 		return saison;
+	}
+	
+	public void nextSaison(){
+		saison=(saison+1)%4;
+		switch(saison){
+			case 0:
+				winter();
+				System.out.println("Hiver\n");
+				break;
+			case 1:
+				spring();
+				System.out.println("Printemps\n");
+				break;
+			case 2:
+				summer();
+				System.out.println("Ete\n");
+				break;
+			case 3:
+				autumn();
+				System.out.println("Automne\n");
+				break;			
+		}
+		
 	}
 
 	public void init()
@@ -70,7 +95,7 @@ public class Automata extends CellularAutomataInteger{
     		}
 		this.swapBuffer();
 		
-		for (int i=0;i<15;i++) step();
+	for (int i=0;i<2;i++) step();
 		
 		this.h=0.001;
     	this.swapBuffer();
@@ -81,20 +106,20 @@ public class Automata extends CellularAutomataInteger{
 		this.tauxfire=0.2;
 		this.h=0.0001;
 		this.tauxpop=0.0001;
-		this.getCellState(0, 0).setNeige(0);				
+		this.getCellState(0, 0).setNeige(0.2);				
 	}
 	
 	public void spring(){
 		this.tauxfire=0.4;
 		this.h=0.0005;
-		this.tauxpop=0.001;
-		this.getCellState(0, 0).setNeige(0);
+		this.tauxpop=0.002;
+		this.getCellState(0, 0).setNeige(0.05);
 	}
 	
 	public void summer(){
 		this.tauxfire=0.75;
 		this.h=0.002;
-		this.tauxpop=0.0006;
+		this.tauxpop=0.0008;
 		this.getCellState(0, 0).setNeige(0);
 	}
 	
@@ -102,14 +127,27 @@ public class Automata extends CellularAutomataInteger{
 		this.tauxfire=0.6;
 		this.h=0.001;
 		this.tauxpop=0.0004;
-		this.getCellState(0, 0).setNeige(0);
+		this.getCellState(0, 0).setNeige(0.05);
 		
 	}
 	
-	
-	public void step(){
+	public void SetDesert(){
+		if (!desert)		System.out.println("Secheresse!\n");
+		else System.out.println("Fin secheresse\n");
+		desert=(!desert);
+		desert();
 
-		if(this.world.getIteration()%90000==0){
+	}
+	
+	public void desert(){
+		this.tauxfire=0.8;
+		this.h=0.003;
+		this.tauxpop=0.00005;
+		this.getCellState(0, 0).SetDesert();
+	}
+	public void step(){
+		if(!desert){
+		if(this.world.getIteration()%60000==0){
 			saison=(saison+1)%4;
 			switch(saison){
 				case 0:
@@ -130,6 +168,10 @@ public class Automata extends CellularAutomataInteger{
 					break;			
 			}
 		}
+		}else
+		{
+			
+		}
 		this.StepLiquideTmp();
 		
 		for ( int x = 0 ; x != _dx ; x++ )
@@ -143,7 +185,8 @@ public class Automata extends CellularAutomataInteger{
     				this.world.cellsColorValues.setCellState(x, y, color);
     			}
     			else if(LaveTmp[x][y]!=0){
-    				if(!(this.getCellState(x, y) instanceof Lave)) this.setCellState(x, y, new Lave(x,y,LaveTmp[x][y]));  
+    				if(LaveTmp[x][y]>0&&this.getCellState(x, y)instanceof Eau) this.setCellState(x, y, new Obsidienne(x,y));
+    				else if(!(this.getCellState(x, y) instanceof Lave)) this.setCellState(x, y, new Lave(x,y,LaveTmp[x][y]));  
     				else{
     					((Lave)this.getCellState(x, y)).SetNiveauLave(LaveTmp[x][y]);
     					this.setCellState(x, y, this.getCellState(x,y));
@@ -155,6 +198,7 @@ public class Automata extends CellularAutomataInteger{
     			}
     				
     			else if(EauTmp[x][y]!=0){
+    				if(EauTmp[x][y]>0&&this.getCellState(x, y)instanceof Lave) this.setCellState(x, y, new Obsidienne(x,y));
     				if(!(this.getCellState(x, y) instanceof Eau)) this.setCellState(x, y, new Eau(x,y,EauTmp[x][y]));  
     				else{
     					((Eau)this.getCellState(x, y)).SetNiveauEau(EauTmp[x][y]);
@@ -229,7 +273,9 @@ public class Automata extends CellularAutomataInteger{
 
     			   			
     			else if(this.getCellState(x, y) instanceof Cell) {
-    				this.StepCell(x, y);     				
+    				this.StepCell(x,y);    				
+    				this.getCellState(x, y).SetCellColor();
+
     				color=this.getCellState(x, y).GetColor();
     				this.world.cellsColorValues.setCellState(x, y, color);
     				    				
@@ -242,8 +288,10 @@ public class Automata extends CellularAutomataInteger{
     		}    			
 		this.resetEauTmp();
 		this.resetLaveTmp();
+		if((this.world.getIteration()%50)==10)this.setCellState(110, 120, new Eau(110, 110, 0.1));
+		if((this.world.getIteration()%60)==10)this.setCellState(240, 250, new Eau(220, 220, 0.1));
 		if(eruption){
-		if((this.world.getIteration()%40)==10)this.setCellState(154, 164, new Lave(154, 164, 0.5));
+		if((this.world.getIteration()%40)==10)this.setCellState(250, 320, new Lave(250, 320, 0.5));
 		}
 		this.swapBuffer();
 

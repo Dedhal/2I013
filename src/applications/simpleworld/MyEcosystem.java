@@ -18,7 +18,7 @@ public class MyEcosystem {
 		// 3: l'amplitude de l'altitude (plus la valeur est elevee, plus haute sont les montagnes)
 		// 4: la quantite d'eau
 		//Landscape myLandscape = new Landscape(myWorld, 256, 256, 0.1, 0.7);
-		Landscape myLandscape = new Landscape(myWorld, "landscape_paris-200.png", 0.2, 0.42);
+		Landscape myLandscape = new Landscape(myWorld, "land2.png", 0.2, 0.31);
 		
 		Landscape.run(myLandscape);
     }

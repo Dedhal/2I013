@@ -55,6 +55,7 @@ public class WorldOfTrees extends World {
     		}
     	
     	// add some objects
+    	/*
     	for ( int i = 0 ; i < 11 ; i++ )
     	{
     		if ( i%10 == 0 )
@@ -63,7 +64,7 @@ public class WorldOfTrees extends World {
     			uniqueObjects.add(new BridgeBlock(110,110+i,this));
     	}
     	
-    	
+    	*/
     	for(int i=0;i<15;i++){
     		int x = (int)(Math.random()*getWidth());
     		int y = (int)(Math.random()*getHeight());
