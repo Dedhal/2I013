@@ -656,10 +656,10 @@ public class Landscape implements GLEventListener, KeyListener, MouseListener{
 				
 				switch(this._myWorld.getSaison()){
 				case 0 : 
-					System.out.println("Hivers");
+					System.out.println("Hiver");
 					break;
 				case 1 : 
-					System.out.println("Printemps");
+					System.out.println("Printemp");
 					break;
 				case 2 : 
 					System.out.println("Ete");
