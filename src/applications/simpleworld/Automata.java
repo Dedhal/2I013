@@ -95,7 +95,7 @@ public class Automata extends CellularAutomataInteger{
     		}
 		this.swapBuffer();
 		
-	for (int i=0;i<2;i++) step();
+	for (int i=0;i<500;i++) step();
 		
 		this.h=0.001;
     	this.swapBuffer();

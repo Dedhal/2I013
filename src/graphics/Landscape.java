@@ -90,7 +90,7 @@ public class Landscape implements GLEventListener, KeyListener, MouseListener{
 		
 		private float rotateX = 0.0f;
 		
-		private float rotationVelocity = 0.6f; // 0.2f
+		private float rotationVelocity = 0f; // 0.2f
 
         int it = 0;
         int movingIt = 0;
@@ -364,22 +364,22 @@ public class Landscape implements GLEventListener, KeyListener, MouseListener{
                 //System.out.println("rotateT = " + rotateT );
                 
                 it++;
-                switch(it%3000){
+                switch(it%2000){
                 
                 	case 0 :
                 		gl.glClearColor(0.f, 0.f, 0.f, 0.0f);
                 		break;
                 		
-                	case 750 :
+                	case 500 :
                         gl.glClearColor(0.3f, 0.1f, 0.5f, 0.0f);
                         break;
                         
-                	case 1500 :
+                	case 1000 :
                         gl.glClearColor(0.4f, 0.4f, 1f, 0.0f);
                         break;
                     
-                	case 2250 :
-                        gl.glClearColor(0.5f, 0.1f, 0.1f, 0.0f);
+                	case 1500 :
+                        gl.glClearColor(0.7f, 0.25f, 0.35f, 0.0f);
                                 
                 }
                 	
@@ -652,14 +652,22 @@ public class Landscape implements GLEventListener, KeyListener, MouseListener{
 				
 				this._myWorld.toggle_eruption();
 				break; 
+			case KeyEvent.VK_I:
+				this._myWorld.SetDesert();
+				break;
+			case KeyEvent.VK_E:
+				
+				this._myWorld.nextSaison();
+				break;
+				
 			case KeyEvent.VK_A:
 				
 				switch(this._myWorld.getSaison()){
 				case 0 : 
-					System.out.println("Hiver");
+					System.out.println("Hivers");
 					break;
 				case 1 : 
-					System.out.println("Printemp");
+					System.out.println("Printemps");
 					break;
 				case 2 : 
 					System.out.println("Ete");
@@ -674,7 +682,9 @@ public class Landscape implements GLEventListener, KeyListener, MouseListener{
 			case KeyEvent.VK_H:
 				System.out.println(
 						"Help:\n" +
-						"           [a] get saison\n" +
+						"           [a] get season\n" +
+						"           [e] change season\n" +
+						"           [i] drought\n" +
 						"           [u] eruption\n" +
 						"           [v] change view\n" +
 						"           [o] objects display on/off\n" +
