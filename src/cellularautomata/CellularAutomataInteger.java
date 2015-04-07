@@ -138,13 +138,13 @@ public class CellularAutomataInteger extends CellularAutomata {
 		if(getCellState(i , (j+_dy-1)%(_dy) ) instanceof Feuilles)
 			if(((Feuilles)getCellState(i , (j+_dy-1)%(_dy) )).GetFeu()&&Math.random()<d) return true;
 		if(getCellState((i+_dx-1)%(_dx) , (j+_dy+1)%(_dy) ) instanceof Feuilles)
-			if(((Feuilles)getCellState((i+_dx-1)%(_dx) , (j+_dy+1)%(_dy) )).GetFeu()&&Math.random()<d) return true;
+			if(((Feuilles)getCellState((i+_dx-1)%(_dx) , (j+_dy+1)%(_dy) )).GetFeu()&&Math.random()<(d/2)) return true;
 		if(getCellState((i+_dx+1)%(_dx) , (j+_dy+1)%(_dy) ) instanceof Feuilles)
-			if(((Feuilles)getCellState((i+_dx+1)%(_dx) , (j+_dy+1)%(_dy) )).GetFeu()&&Math.random()<d) return true;
+			if(((Feuilles)getCellState((i+_dx+1)%(_dx) , (j+_dy+1)%(_dy) )).GetFeu()&&Math.random()<(d/2)) return true;
 		if(getCellState((i+_dx-1)%(_dx)  , (j+_dy-1)%(_dy) ) instanceof Feuilles)
-			if(((Feuilles)getCellState((i+_dx-1)%(_dx) , (j+_dy-1)%(_dy) )).GetFeu()&&Math.random()<d) return true;
+			if(((Feuilles)getCellState((i+_dx-1)%(_dx) , (j+_dy-1)%(_dy) )).GetFeu()&&Math.random()<(d/2)) return true;
 		if(getCellState((i+_dx+1)%(_dx)  , (j+_dy-1)%(_dy) ) instanceof Feuilles)
-			if(((Feuilles)getCellState((i+_dx+1)%(_dx) , (j+_dy-1)%(_dy) )).GetFeu()&&Math.random()<d) return true;
+			if(((Feuilles)getCellState((i+_dx+1)%(_dx) , (j+_dy-1)%(_dy) )).GetFeu()&&Math.random()<(d/2)) return true;
 
 		return false;	
 	}
