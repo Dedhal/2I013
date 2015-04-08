@@ -1,0 +1,357 @@
+package applications.simpleworld;
+
+import cellularautomata.CellularAutomataDouble;
+import cellularautomata.CellularAutomataInteger;
+import cellularobject.Lave;
+import cellularobject.Arbre;
+import cellularobject.Cell;
+import cellularobject.Cendre;
+import cellularobject.Eau;
+import cellularobject.Feuilles;
+import cellularobject.Herbes;
+import cellularobject.EauProfonde;
+import cellularobject.Obsidienne;
+import worlds.World;
+
+public class Automata extends CellularAutomataInteger {
+	protected int saison;
+	protected boolean eruption;
+	protected boolean desert=false;
+	
+	public Automata(World __world, int __dx , int __dy, CellularAutomataDouble cellsHeightValuesCA ) {
+		
+		super(__dx,__dy,true, __world , cellsHeightValuesCA); 
+		saison=0;
+		eruption=false;
+
+	}
+	
+	public void winter(){
+		this.tauxfire=0.2;
+		this.h=0.0001;
+		this.tauxpop=0.0001;
+		this.getCellState(0, 0).setNeige(0.2);				
+	}
+	
+	public void spring(){
+		this.tauxfire=0.4;
+		this.h=0.0005;
+		this.tauxpop=0.002;
+		this.getCellState(0, 0).setNeige(0.05);
+	}
+	
+	public void summer(){
+		this.tauxfire=0.75;
+		this.h=0.002;
+		this.tauxpop=0.0008;
+		this.getCellState(0, 0).setNeige(0);
+	}
+	
+	public void autumn(){
+		this.tauxfire=0.6;
+		this.h=0.001;
+		this.tauxpop=0.0004;
+		this.getCellState(0, 0).setNeige(0.05);
+		
+	}
+	
+	public void SetDesert(){
+		if (!desert)		System.out.println("Secheresse!\n");
+		else System.out.println("Fin secheresse\n");
+		desert=(!desert);
+		desert();
+
+	}
+	
+	public void desert(){
+		this.tauxfire=0.8;
+		this.h=0.003;
+		this.tauxpop=0.00005;
+		this.getCellState(0, 0).SetDesert();
+	}
+	
+	public void nextSaison(){
+		saison=(saison+1)%4;
+		switch(saison){
+			case 0:
+				winter();
+				System.out.println("Hiver\n");
+				break;
+			case 1:
+				spring();
+				System.out.println("Printemps\n");
+				break;
+			case 2:
+				summer();
+				System.out.println("Ete\n");
+				break;
+			case 3:
+				autumn();
+				System.out.println("Automne\n");
+				break;			
+		}
+		
+	}
+	
+	public int getSaison(){
+		return saison;
+	}
+	
+	public Cell getCell(int x, int y)
+	{
+		
+		
+		Cell[][] buffer = this.getCurrentBuffer();
+		if(x < 0)
+			x = buffer.length + x - 1;
+		
+		if(x >= buffer.length)
+			x = x%buffer.length;
+		
+		if(y >= buffer[x].length)
+			y = y%buffer[x].length;
+		
+		if(y < 0)
+			y = buffer[x].length + y - 1;
+		
+		return buffer[x][y];
+	}
+	
+	public void init()
+	{
+		for ( int x = 0 ; x != _dx ; x++ )
+    		for ( int y = 0 ; y != _dy ; y++ )
+    		{
+    			if ( _cellsHeightValuesCA.getCellState(x,y) >= 0 )
+    			{
+    				if ( PlaceLibreArbre(x,y) &&( Math.random() < 0.001 )) // was: 0.71
+    					this.setCellState(x, y, new Arbre(x,y)); // tree
+    				
+    				else if( Math.random() < 0.003) // was 0.003
+    					this.setCellState(x, y, new Herbes(x,y));
+    				
+    				else
+    					this.setCellState(x, y, new Cell(x,y)); // empty
+    			}
+    			else
+    			{
+    				this.setCellState(x, y, new EauProfonde(x,y)); // water (ignore)
+    			}
+    		}
+		this.swapBuffer();
+		
+		for (int i=0;i<500;i++) step();
+		
+		this.h=0.001;
+    	this.swapBuffer();
+	}
+
+	public void step(){
+		if(!desert){
+		if(this.world.getIteration()%60000==0){
+			saison=(saison+1)%4;
+			switch(saison){
+				case 0:
+					winter();
+					System.out.println("Hiver\n");
+					break;
+				case 1:
+					spring();
+					System.out.println("Printemps\n");
+					break;
+				case 2:
+					summer();
+					System.out.println("Ete\n");
+					break;
+				case 3:
+					autumn();
+					System.out.println("Automne\n");
+					break;			
+			}
+		}
+		}
+		else
+		{
+			
+		}
+		this.StepLiquideTmp();
+		
+		for ( int x = 0 ; x != _dx ; x++ )
+    		for ( int y = 0 ; y != _dy ; y++ )
+    		{  			
+    			float[] color;
+    			if(this.getCellState(x, y) instanceof EauProfonde) {
+    				this.setCellState(x, y, new EauProfonde(x,y));
+    				color=this.getCellState(x, y).GetColor();
+    				
+    				this.world.cellsColorValues.setCellState(x, y, color);
+    			}
+    			else if(LaveTmp[x][y]!=0){
+    				if(LaveTmp[x][y]>0&&this.getCellState(x, y)instanceof Eau) this.setCellState(x, y, new Obsidienne(x,y));
+    				else if(!(this.getCellState(x, y) instanceof Lave)) this.setCellState(x, y, new Lave(x,y,LaveTmp[x][y]));  
+    				else{
+    					((Lave)this.getCellState(x, y)).SetNiveauLave(LaveTmp[x][y]);
+    					this.setCellState(x, y, this.getCellState(x,y));
+    				}
+
+    				color=this.getCellState(x, y).GetColor();
+    				this.world.cellsColorValues.setCellState(x, y, color);
+    				
+    			}
+    				
+    			else if(EauTmp[x][y]!=0){
+    				if(EauTmp[x][y]>0&&this.getCellState(x, y)instanceof Lave) this.setCellState(x, y, new Obsidienne(x,y));
+    				if(!(this.getCellState(x, y) instanceof Eau)) this.setCellState(x, y, new Eau(x,y,EauTmp[x][y]));  
+    				else{
+    					((Eau)this.getCellState(x, y)).SetNiveauEau(EauTmp[x][y]);
+    					this.setCellState(x, y, this.getCellState(x,y));
+    				}
+
+    				color=this.getCellState(x, y).GetColor();
+    				this.world.cellsColorValues.setCellState(x, y, color);
+    				
+    			}
+    			
+     			
+    			else if(this.getCellState(x, y) instanceof Lave){
+    				if(((Lave)this.getCellState(x,y)).GetVie()==0){
+    					this.setCellState(x, y, new Obsidienne(x,y));
+    				}else{
+    					this.StepLave(x, y);
+    					this.setCellState(x,y,this.getCellState(x, y));
+    				}
+    				color=this.getCellState(x, y).GetColor();
+    				this.world.cellsColorValues.setCellState(x, y, color);
+    			}
+    			
+    			else if(this.getCellState(x, y) instanceof Obsidienne){
+    				Obsidienne ob=(Obsidienne) this.getCellState(x, y);
+    				if(ob.GetVie()==0) this.setCellState(x,y,new Cell(x, y));
+    				else {
+    					ob.Step();
+    					this.setCellState(x,y,this.getCellState(x, y));
+    				}
+    				color=this.getCellState(x, y).GetColor();
+    				this.world.cellsColorValues.setCellState(x, y, color);
+    				
+    			}
+    			
+    			else if(this.getCellState(x, y) instanceof Eau){
+    				this.StepEau(x, y);
+    				this.setCellState(x,y,this.getCellState(x, y));
+    				color=this.getCellState(x, y).GetColor();
+    				this.world.cellsColorValues.setCellState(x, y, color);
+    			}
+    			
+    			else if(this.getCellState(x, y) instanceof Arbre){
+    				this.StepArbre(x, y);
+    				color=this.getCellState(x, y).GetColor();
+    				this.world.cellsColorValues.setCellState(x, y, color);
+    			}
+    			   			
+    			else if(this.getCellState(x, y) instanceof Cendre) {
+    				this.StepCendre(x, y);
+    				color=this.getCellState(x, y).GetColor();
+    				this.world.cellsColorValues.setCellState(x, y, color);
+    			}
+    			
+    			else if(this.getCellState(x, y) instanceof Feuilles) {
+    				this.StepFeuilles(x, y);
+    				color=this.getCellState(x, y).GetColor();
+    				this.world.cellsColorValues.setCellState(x, y, color);
+    			}
+    			else if(this.getCellState(x, y) instanceof Herbes) {
+
+    				if(((Herbes)this.getCellState(x, y)).GetVie() <= 0)
+    					this.setCellState(x, y, new Cendre(x, y));
+    				else
+    				{
+    					this.StepHerbes(x, y);
+    					color=this.getCellState(x, y).GetColor();
+    					this.world.cellsColorValues.setCellState(x, y, color);
+    				}
+
+    			}
+
+    			   			
+    			else if(this.getCellState(x, y) instanceof Cell) {
+    				this.StepCell(x,y);    				
+    				this.getCellState(x, y).SetCellColor();
+
+    				color=this.getCellState(x, y).GetColor();
+    				this.world.cellsColorValues.setCellState(x, y, color);
+    				    				
+    			}
+    			
+    			else {
+    				this.setCellState(x, y, this.getCellState(x, y));
+    				
+    			}    			
+    		}    			
+		this.resetEauTmp();
+		this.resetLaveTmp();
+		if((this.world.getIteration()%50)==10)this.setCellState(110, 120, new Eau(110, 110, 0.1));
+		if((this.world.getIteration()%60)==10)this.setCellState(240, 250, new Eau(220, 220, 0.1));
+		if(eruption){
+		if((this.world.getIteration()%40)==10)this.setCellState(250, 320, new Lave(250, 320, 0.5));
+		}
+		this.swapBuffer();
+
+	}
+	
+	public void refresh()
+	{
+		for ( int x = 0 ; x != _dx ; x++ )
+    		for ( int y = 0 ; y != _dy ; y++ )
+    		{
+    			float[] color;
+    			if(this.getCellState(x, y) instanceof Arbre){
+    				color=this.getCellState(x, y).GetColor();
+    				this.world.cellsColorValues.setCellState(x, y, color);
+    			}
+    			
+    			else if(this.getCellState(x, y) instanceof Cendre) {
+    				color=this.getCellState(x, y).GetColor();
+    				this.world.cellsColorValues.setCellState(x, y, color);
+    			}
+    			
+    			else if(this.getCellState(x, y) instanceof Feuilles) {
+    				color=this.getCellState(x, y).GetColor();
+    				this.world.cellsColorValues.setCellState(x, y, color);
+    			}
+    			else if(this.getCellState(x, y) instanceof Herbes) {
+    				color=this.getCellState(x, y).GetColor();
+    				this.world.cellsColorValues.setCellState(x, y, color);
+    			}
+    			else if(this.getCellState(x, y) instanceof EauProfonde) {
+    				this.setCellState(x, y, new EauProfonde(x,y));
+    				color=this.getCellState(x, y).GetColor();
+    				
+    				this.world.cellsColorValues.setCellState(x, y, color);
+    			}
+    			   			
+    			else if(this.getCellState(x, y) instanceof Cell) {  				
+    				color=this.getCellState(x, y).GetColor();
+    				this.world.cellsColorValues.setCellState(x, y, color);
+    				    				
+    			}
+    			
+    			else {
+    				this.setCellState(x, y, this.getCellState(x, y));
+    			}
+    		}
+		this.swapBuffer();
+	}
+	
+	
+	public void toggle_eruption(){
+		if(!eruption){
+			eruption=true;
+			System.out.println("Eruption!!\n");
+		}
+		else{
+			eruption=false;
+			System.out.println("Fin eruption\n");
+		}
+	}
+}
